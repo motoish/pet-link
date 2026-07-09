@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { PET_TILES } from "./assets/pets";
 import { Board as BoardView } from "./components/Board";
 import { Controls } from "./components/Controls";
@@ -55,7 +55,6 @@ export default function App() {
   const [connectionPath, setConnectionPath] = useState<Point[] | null>(null);
   const [hintedPoints, setHintedPoints] = useState<Point[]>([]);
   const [gameState, setGameState] = useState<GameState>("playing");
-  const [moves, setMoves] = useState(0);
   const [score, setScore] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(TIMED_MODE_SECONDS);
@@ -65,8 +64,6 @@ export default function App() {
   const [completionReward, setCompletionReward] = useState<RewardAllowances | null>(null);
   const [bestRelaxedTime, setBestRelaxedTime] = useState(() => loadBestRelaxedTime());
   const [bestTimedScore, setBestTimedScore] = useState(() => loadBestTimedScore());
-
-  const remainingPairs = useMemo(() => countRemainingPairs(board), [board]);
 
   useEffect(() => {
     if (gameState !== "playing") {
@@ -104,7 +101,6 @@ export default function App() {
     setConnectionPath(null);
     setHintedPoints([]);
     setGameState("playing");
-    setMoves(0);
     setScore(0);
     setElapsedSeconds(0);
     setRemainingSeconds(TIMED_MODE_SECONDS);
@@ -141,7 +137,6 @@ export default function App() {
       return;
     }
 
-    setMoves((value) => value + 1);
     const path = findConnection(board, selected, point);
     if (!path) {
       setSelected(point);
