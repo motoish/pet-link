@@ -191,8 +191,7 @@ Each new game starts with 1 available shuffle. Shuffle randomizes remaining tile
 
 After a completed timed game, the next game may receive bonus shuffles based on the completed game's remaining time. The reward uses the 6-minute timed-mode duration as the baseline:
 
-- Remaining time below `6 minutes x 20%` gives no bonus. This means less than 72 seconds remaining gives 0 bonus shuffles.
-- Remaining time from `6 minutes x 20%` up to, but not including, `6 minutes x 30%` gives no bonus. This means 72 to 107 seconds remaining gives 0 bonus shuffles.
+- Remaining time below 108 seconds gives no bonus.
 - Remaining time greater than or equal to `6 minutes x 30%` gives one six-sided dice roll. This means 108 seconds or more remaining earns a dice roll, and the dice result is the number of bonus shuffles for the next game.
 
 The next game's shuffle allowance is `1 + bonus shuffles`. Failed timed games and relaxed games do not award bonus shuffles. If there is no previous qualifying timed completion, the allowance is 1.
@@ -227,8 +226,7 @@ Unit tests should cover:
 - Different tile ids fail.
 - Empty cells cannot be selected as matches.
 - Shuffle allowance starts at 1 without previous completion data.
-- Shuffle allowance gives no bonus when timed-mode remaining time is below 72 seconds.
-- Shuffle allowance gives no bonus when timed-mode remaining time is 72 to 107 seconds.
+- Shuffle allowance gives no bonus when timed-mode remaining time is below 108 seconds.
 - Shuffle allowance includes one dice-roll bonus when timed-mode remaining time is at least 108 seconds.
 - Failed timed games do not award shuffle bonuses.
 
