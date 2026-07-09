@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import {
   BOARD_COLUMNS,
   BOARD_ROWS,

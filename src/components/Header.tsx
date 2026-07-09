@@ -1,5 +1,6 @@
 import type { GameMode } from "../game/types";
-import { LANGUAGES, t, type Language } from "../i18n/translations";
+import type { Language } from "../i18n/translations";
+import { LANGUAGES, t } from "../i18n/translations";
 
 type HeaderProps = {
   mode: GameMode;

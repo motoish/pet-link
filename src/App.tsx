@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { PET_TILES } from "./assets/pets";
 import { Board as BoardView } from "./components/Board";
 import { Controls } from "./components/Controls";
@@ -14,14 +15,15 @@ import {
   shuffleRemainingTiles
 } from "./game/board";
 import { findConnection } from "./game/pathfinding";
+import type { PreviousGameResult, RewardAllowances } from "./game/shuffleRewards";
 import {
   calculateRewardAllowances,
   createBaseRewardAllowances,
-  TIMED_MODE_SECONDS,
-  type PreviousGameResult,
-  type RewardAllowances
+  TIMED_MODE_SECONDS
 } from "./game/shuffleRewards";
 import type { Board, GameMode, Point } from "./game/types";
+import type { Language } from "./i18n/translations";
+import { t } from "./i18n/translations";
 import {
   consumePendingReward,
   loadBestRelaxedTime,
@@ -35,7 +37,6 @@ import {
   savePendingReward,
   savePreviousGameResult
 } from "./storage/localRecords";
-import { t, type Language } from "./i18n/translations";
 
 type GameState = "playing" | "paused" | "won" | "failed";
 

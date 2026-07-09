@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { isLanguage, LANGUAGES, t } from "./translations";
 
 describe("translations", () => {

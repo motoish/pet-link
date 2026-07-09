@@ -1,5 +1,5 @@
-import type { GameMode } from "../game/types";
 import type { PreviousGameResult, RewardAllowances } from "../game/shuffleRewards";
+import type { GameMode } from "../game/types";
 import { isLanguage, type Language } from "../i18n/translations";
 
 const LAST_MODE_KEY = "pet-link:last-mode";

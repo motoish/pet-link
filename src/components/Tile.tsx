@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
-import type { Cell, Point } from "../game/types";
+
 import { getPetTile } from "../assets/pets";
+import type { Cell, Point } from "../game/types";
 
 type TileProps = {
   cell: Cell;
