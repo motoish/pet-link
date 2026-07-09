@@ -24,6 +24,11 @@
       "automergeType": "pr"
     },
     {
+      "description": "Require manual review for pre-1.0 Oxfmt updates",
+      "matchPackageNames": ["oxfmt"],
+      "automerge": false
+    },
+    {
       "description": "Group non-major Bun dependency updates",
       "matchManagers": ["bun"],
       "matchUpdateTypes": ["minor", "patch"],
