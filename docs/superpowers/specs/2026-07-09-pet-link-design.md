@@ -20,7 +20,7 @@ Included in version one:
 - One fixed normal board: `10x8`.
 - Built-in lightweight pet SVG tiles.
 - New game, hint, shuffle, pause, and resume controls.
-- Shuffle allowance starts at 1 per game and can gain bonus uses from the previous timed game's remaining time.
+- Shuffle and hint allowances each start at 1 per game and can gain bonus uses from the previous timed game's remaining time.
 - Local best records and settings stored in `localStorage`.
 - Unit tests for board generation and path matching.
 
@@ -154,6 +154,7 @@ The game state includes:
 - Elapsed time or remaining time.
 - Score.
 - Remaining shuffle allowance.
+- Remaining hint allowance.
 - Pause state.
 - End state: playing, paused, won, or failed.
 - Hint and shuffle usage counts.
@@ -187,16 +188,16 @@ The returned path is used for the temporary connection-line overlay.
 
 Hint finds the first currently removable pair and highlights it briefly. If no pair is available, the game can offer shuffle.
 
-Each new game starts with 1 available shuffle. Shuffle randomizes remaining tiles while preserving their ids and count. Using shuffle consumes 1 available shuffle. If the player has 0 shuffles left, the shuffle button is disabled.
+Each new game starts with 1 available hint and 1 available shuffle. Using hint consumes 1 hint when a removable pair is highlighted. Using shuffle consumes 1 shuffle. If the player has 0 hints or 0 shuffles left, the corresponding button is disabled.
 
-After a completed timed game, the next game may receive bonus shuffles based on the completed game's remaining time. The reward uses the 6-minute timed-mode duration as the baseline:
+After a completed timed game, the game immediately rolls any earned reward dice and shows the result in the completion dialog. Those exact rewards apply to the next game. The reward uses the 6-minute timed-mode duration as the baseline:
 
-- Remaining time below 108 seconds gives no bonus.
-- Remaining time greater than or equal to `6 minutes x 30%` gives one six-sided dice roll. This means 108 seconds or more remaining earns a dice roll, and the dice result is the number of bonus shuffles for the next game.
+- Shuffle reward: remaining time below 108 seconds gives no shuffle bonus. Remaining time greater than or equal to `6 minutes x 30%` gives one six-sided dice roll. This means 108 seconds or more remaining earns a shuffle die roll, and the die result is the number of bonus shuffles for the next game.
+- Hint reward: remaining time below 72 seconds gives no hint bonus. Remaining time greater than or equal to `6 minutes x 20%` gives one six-sided dice roll. This means 72 seconds or more remaining earns a hint die roll, and the die result is the number of bonus hints for the next game.
 
-The next game's shuffle allowance is `1 + bonus shuffles`. Failed timed games and relaxed games do not award bonus shuffles. If there is no previous qualifying timed completion, the allowance is 1.
+The next game's shuffle allowance is `1 + bonus shuffles`, and the next game's hint allowance is `1 + bonus hints`. Failed timed games and relaxed games do not award bonuses. If there is no previous qualifying timed completion, each allowance is 1.
 
-When a bonus applies, the new game dialog or status area should briefly show the remaining time, threshold reached, dice roll, and final shuffle allowance so the reward feels understandable.
+When a bonus applies, the completion dialog and the next game's status area should briefly show the remaining time, threshold reached, dice roll, and final allowance so the reward feels understandable.
 
 Shuffle should try a bounded number of randomizations to produce at least one available match. If no match is found after the bounded attempts, the game may still show the shuffled board and allow another shuffle if allowance remains.
 
@@ -207,7 +208,7 @@ Use `localStorage` for lightweight local persistence:
 - Last selected mode.
 - Best relaxed completion time.
 - Best timed score.
-- Previous timed completion reward result for shuffle rewards.
+- Previous timed completion reward result for hint and shuffle rewards.
 
 No save-file export is required in version one.
 
@@ -225,17 +226,19 @@ Unit tests should cover:
 - Blocked paths fail.
 - Different tile ids fail.
 - Empty cells cannot be selected as matches.
-- Shuffle allowance starts at 1 without previous completion data.
+- Shuffle and hint allowances start at 1 without previous completion data.
 - Shuffle allowance gives no bonus when timed-mode remaining time is below 108 seconds.
 - Shuffle allowance includes one dice-roll bonus when timed-mode remaining time is at least 108 seconds.
-- Failed timed games do not award shuffle bonuses.
+- Hint allowance gives no bonus when timed-mode remaining time is below 72 seconds.
+- Hint allowance includes one dice-roll bonus when timed-mode remaining time is at least 72 seconds.
+- Failed timed games do not award bonuses.
 
 Manual browser verification should cover:
 
 - Starting a new `10x8` game.
 - Switching between relaxed and timed modes.
 - Valid and invalid matches.
-- Hint behavior.
+- Hint allowance, disabled state, and bonus display.
 - Shuffle allowance, disabled state, and bonus display.
 - Pause and resume.
 - Victory dialog.

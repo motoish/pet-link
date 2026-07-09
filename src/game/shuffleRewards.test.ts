@@ -1,56 +1,92 @@
 import { describe, expect, test } from "vitest";
-import { calculateNextShuffleAllowance } from "./shuffleRewards";
+import {
+  calculateRewardAllowances,
+  createBaseRewardAllowances,
+  HINT_REWARD_THRESHOLD_SECONDS,
+  SHUFFLE_REWARD_THRESHOLD_SECONDS
+} from "./shuffleRewards";
 
-describe("calculateNextShuffleAllowance", () => {
-  test("starts with one shuffle when there is no previous completion", () => {
-    const result = calculateNextShuffleAllowance({ previousGame: null, rollDie: () => 6 });
+function rolling(...values: number[]) {
+  let index = 0;
+  return () => values[index++] ?? values[values.length - 1] ?? 1;
+}
 
-    expect(result.allowance).toBe(1);
-    expect(result.bonus).toBe(0);
-    expect(result.dieRoll).toBeNull();
+describe("createBaseRewardAllowances", () => {
+  test("starts every game with one shuffle and one hint", () => {
+    expect(createBaseRewardAllowances()).toEqual({
+      shuffleAllowance: 1,
+      shuffleBonus: 0,
+      shuffleDieRoll: null,
+      hintAllowance: 1,
+      hintBonus: 0,
+      hintDieRoll: null
+    });
+  });
+});
+
+describe("calculateRewardAllowances", () => {
+  test("does not award bonuses without a previous completion", () => {
+    const result = calculateRewardAllowances({ previousGame: null, rollDie: rolling(6) });
+
+    expect(result).toEqual(createBaseRewardAllowances());
   });
 
-  test("does not award a bonus for failed timed games", () => {
-    const result = calculateNextShuffleAllowance({
+  test("does not award bonuses for failed timed games", () => {
+    const result = calculateRewardAllowances({
       previousGame: { mode: "timed", completed: false, remainingSeconds: 180 },
-      rollDie: () => 6
+      rollDie: rolling(6)
     });
 
-    expect(result.allowance).toBe(1);
-    expect(result.bonus).toBe(0);
-    expect(result.dieRoll).toBeNull();
+    expect(result).toEqual(createBaseRewardAllowances());
   });
 
-  test("does not award a bonus for relaxed games", () => {
-    const result = calculateNextShuffleAllowance({
+  test("does not award bonuses for relaxed games", () => {
+    const result = calculateRewardAllowances({
       previousGame: { mode: "relaxed", completed: true, remainingSeconds: null },
-      rollDie: () => 6
+      rollDie: rolling(6)
     });
 
-    expect(result.allowance).toBe(1);
-    expect(result.bonus).toBe(0);
-    expect(result.dieRoll).toBeNull();
+    expect(result).toEqual(createBaseRewardAllowances());
   });
 
-  test("does not award a bonus below 108 remaining seconds", () => {
-    const result = calculateNextShuffleAllowance({
-      previousGame: { mode: "timed", completed: true, remainingSeconds: 107 },
-      rollDie: () => 6
+  test("does not award either bonus below the hint threshold", () => {
+    const result = calculateRewardAllowances({
+      previousGame: { mode: "timed", completed: true, remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS - 1 },
+      rollDie: rolling(6)
     });
 
-    expect(result.allowance).toBe(1);
-    expect(result.bonus).toBe(0);
-    expect(result.dieRoll).toBeNull();
+    expect(result).toEqual(createBaseRewardAllowances());
   });
 
-  test("adds one die roll as bonus at 108 remaining seconds", () => {
-    const result = calculateNextShuffleAllowance({
-      previousGame: { mode: "timed", completed: true, remainingSeconds: 108 },
-      rollDie: () => 4
+  test("awards only the hint die at 72 remaining seconds", () => {
+    const result = calculateRewardAllowances({
+      previousGame: { mode: "timed", completed: true, remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS },
+      rollDie: rolling(5)
     });
 
-    expect(result.allowance).toBe(5);
-    expect(result.bonus).toBe(4);
-    expect(result.dieRoll).toBe(4);
+    expect(result).toEqual({
+      shuffleAllowance: 1,
+      shuffleBonus: 0,
+      shuffleDieRoll: null,
+      hintAllowance: 6,
+      hintBonus: 5,
+      hintDieRoll: 5
+    });
+  });
+
+  test("awards both dice at 108 remaining seconds", () => {
+    const result = calculateRewardAllowances({
+      previousGame: { mode: "timed", completed: true, remainingSeconds: SHUFFLE_REWARD_THRESHOLD_SECONDS },
+      rollDie: rolling(4, 2)
+    });
+
+    expect(result).toEqual({
+      shuffleAllowance: 5,
+      shuffleBonus: 4,
+      shuffleDieRoll: 4,
+      hintAllowance: 3,
+      hintBonus: 2,
+      hintDieRoll: 2
+    });
   });
 });

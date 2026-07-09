@@ -8,6 +8,7 @@ type StatusBarProps = {
   moves: number;
   remainingPairs: number;
   shuffleAllowance: number;
+  hintAllowance: number;
   bestRelaxedTime: number | null;
   bestTimedScore: number | null;
 };
@@ -20,6 +21,7 @@ export function StatusBar({
   moves,
   remainingPairs,
   shuffleAllowance,
+  hintAllowance,
   bestRelaxedTime,
   bestTimedScore
 }: StatusBarProps) {
@@ -30,6 +32,7 @@ export function StatusBar({
       <StatusItem label="步数" value={String(moves)} />
       <StatusItem label="剩余" value={`${remainingPairs} 对`} />
       <StatusItem label="打乱" value={`${shuffleAllowance} 次`} />
+      <StatusItem label="提示" value={`${hintAllowance} 次`} />
       <StatusItem label="最佳" value={mode === "timed" ? formatNullableScore(bestTimedScore) : formatNullableTime(bestRelaxedTime)} />
     </section>
   );

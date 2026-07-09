@@ -15,20 +15,22 @@ import {
 } from "./game/board";
 import { findConnection } from "./game/pathfinding";
 import {
-  calculateNextShuffleAllowance,
+  calculateRewardAllowances,
+  createBaseRewardAllowances,
   TIMED_MODE_SECONDS,
   type PreviousGameResult,
-  type ShuffleRewardResult
+  type RewardAllowances
 } from "./game/shuffleRewards";
 import type { Board, GameMode, Point } from "./game/types";
 import {
+  consumePendingReward,
   loadBestRelaxedTime,
   loadBestTimedScore,
   loadLastMode,
-  loadPreviousGameResult,
   saveBestRelaxedTime,
   saveBestTimedScore,
   saveLastMode,
+  savePendingReward,
   savePreviousGameResult
 } from "./storage/localRecords";
 
@@ -53,10 +55,10 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(TIMED_MODE_SECONDS);
-  const [shuffleAllowance, setShuffleAllowance] = useState(() => {
-    return calculateNextShuffleAllowance({ previousGame: loadPreviousGameResult() }).allowance;
+  const [rewardAllowances, setRewardAllowances] = useState<RewardAllowances>(() => {
+    return consumePendingReward() ?? createBaseRewardAllowances();
   });
-  const [lastReward, setLastReward] = useState<ShuffleRewardResult | null>(null);
+  const [completionReward, setCompletionReward] = useState<RewardAllowances | null>(null);
   const [bestRelaxedTime, setBestRelaxedTime] = useState(() => loadBestRelaxedTime());
   const [bestTimedScore, setBestTimedScore] = useState(() => loadBestTimedScore());
 
@@ -90,7 +92,7 @@ export default function App() {
   }, [gameState, mode]);
 
   function startNewGame(nextMode = mode) {
-    const reward = calculateNextShuffleAllowance({ previousGame: loadPreviousGameResult() });
+    const nextReward = consumePendingReward() ?? createBaseRewardAllowances();
     setMode(nextMode);
     saveLastMode(nextMode);
     setBoard(createFreshBoard());
@@ -102,8 +104,8 @@ export default function App() {
     setScore(0);
     setElapsedSeconds(0);
     setRemainingSeconds(TIMED_MODE_SECONDS);
-    setShuffleAllowance(reward.allowance);
-    setLastReward(reward.dieRoll === null ? null : reward);
+    setRewardAllowances(nextReward);
+    setCompletionReward(null);
   }
 
   function handleModeChange(nextMode: GameMode) {
@@ -163,6 +165,9 @@ export default function App() {
         remainingSeconds
       };
       savePreviousGameResult(result);
+      const reward = calculateRewardAllowances({ previousGame: result });
+      savePendingReward(reward);
+      setCompletionReward(reward);
       saveBestTimedScore(finalScore);
       setBestTimedScore(loadBestTimedScore());
       return;
@@ -174,12 +179,13 @@ export default function App() {
       remainingSeconds: null
     };
     savePreviousGameResult(result);
+    setCompletionReward(null);
     saveBestRelaxedTime(elapsedSeconds);
     setBestRelaxedTime(loadBestRelaxedTime());
   }
 
   function handleHint() {
-    if (gameState !== "playing") {
+    if (gameState !== "playing" || rewardAllowances.hintAllowance <= 0) {
       return;
     }
 
@@ -190,11 +196,15 @@ export default function App() {
     }
 
     setHintedPoints([hint.first, hint.second]);
+    setRewardAllowances((current) => ({
+      ...current,
+      hintAllowance: current.hintAllowance - 1
+    }));
     window.setTimeout(() => setHintedPoints([]), HINT_FLASH_MS);
   }
 
   function handleShuffle() {
-    if (gameState !== "playing" || shuffleAllowance <= 0) {
+    if (gameState !== "playing" || rewardAllowances.shuffleAllowance <= 0) {
       return;
     }
 
@@ -202,7 +212,10 @@ export default function App() {
     setSelected(null);
     setConnectionPath(null);
     setHintedPoints([]);
-    setShuffleAllowance((value) => value - 1);
+    setRewardAllowances((current) => ({
+      ...current,
+      shuffleAllowance: current.shuffleAllowance - 1
+    }));
   }
 
   function handlePauseToggle() {
@@ -217,7 +230,8 @@ export default function App() {
     });
   }
 
-  const dialog = getDialogState(gameState, mode, elapsedSeconds, remainingSeconds, score, lastReward);
+  const dialog = getDialogState(gameState, mode, elapsedSeconds, remainingSeconds, score, completionReward);
+  const activeRewardText = formatRewardSummary(rewardAllowances, "本局奖励");
 
   return (
     <main className="app-shell">
@@ -230,15 +244,12 @@ export default function App() {
           score={score}
           moves={moves}
           remainingPairs={remainingPairs}
-          shuffleAllowance={shuffleAllowance}
+          shuffleAllowance={rewardAllowances.shuffleAllowance}
+          hintAllowance={rewardAllowances.hintAllowance}
           bestRelaxedTime={bestRelaxedTime}
           bestTimedScore={bestTimedScore}
         />
-        {lastReward && (
-          <p className="reward-note">
-            上局剩余时间达标，骰子 {lastReward.dieRoll} 点，本局打乱 {lastReward.allowance} 次
-          </p>
-        )}
+        {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
         <BoardView
           board={board}
           selected={selected}
@@ -248,7 +259,8 @@ export default function App() {
         />
         <Controls
           paused={gameState === "paused"}
-          shuffleAllowance={shuffleAllowance}
+          shuffleAllowance={rewardAllowances.shuffleAllowance}
+          hintAllowance={rewardAllowances.hintAllowance}
           onNewGame={() => startNewGame()}
           onHint={handleHint}
           onShuffle={handleShuffle}
@@ -286,7 +298,7 @@ function getDialogState(
   elapsedSeconds: number,
   remainingSeconds: number,
   score: number,
-  lastReward: ShuffleRewardResult | null
+  completionReward: RewardAllowances | null
 ) {
   if (gameState === "paused") {
     return {
@@ -297,12 +309,12 @@ function getDialogState(
   }
 
   if (gameState === "won") {
-    const rewardText = mode === "timed" && remainingSeconds >= 108 ? " 下一局会掷骰奖励打乱次数。" : "";
+    const rewardText = completionReward ? formatRewardSummary(completionReward, "奖励结果") : null;
     return {
       title: "通关",
       detail:
         mode === "timed"
-          ? `得分 ${score}，剩余 ${formatTime(remainingSeconds)}。${rewardText}`
+          ? `得分 ${score}，剩余 ${formatTime(remainingSeconds)}。${rewardText ?? "未获得额外奖励。"}`
           : `用时 ${formatTime(elapsedSeconds)}。`,
       primaryLabel: "再来一局"
     };
@@ -318,11 +330,25 @@ function getDialogState(
 
   return {
     title: "",
-    detail: lastReward ? `本局打乱 ${lastReward.allowance} 次。` : "",
+    detail: "",
     primaryLabel: "新游戏"
   };
 }
 
 function samePoint(first: Point, second: Point): boolean {
   return first.row === second.row && first.column === second.column;
+}
+
+function formatRewardSummary(reward: RewardAllowances, prefix: string): string | null {
+  const parts: string[] = [];
+
+  if (reward.shuffleDieRoll !== null) {
+    parts.push(`打乱骰子 ${reward.shuffleDieRoll} 点，下局打乱 ${reward.shuffleAllowance} 次`);
+  }
+
+  if (reward.hintDieRoll !== null) {
+    parts.push(`提示骰子 ${reward.hintDieRoll} 点，下局提示 ${reward.hintAllowance} 次`);
+  }
+
+  return parts.length > 0 ? `${prefix}：${parts.join("；")}` : null;
 }
