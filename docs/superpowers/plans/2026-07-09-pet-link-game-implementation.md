@@ -6,11 +6,11 @@
 
 **Architecture:** Keep game rules in pure TypeScript modules under `src/game/` and render state through React components under `src/components/`. Use SVG React components for built-in pet tiles and `localStorage` for records and last selected mode.
 
-**Tech Stack:** Vite, React, TypeScript, Vitest, CSS modules through plain imported CSS.
+**Tech Stack:** Bun, Vite, React, TypeScript, Vitest, CSS modules through plain imported CSS.
 
 ## Global Constraints
 
-- The game runs locally in a browser through `npm run dev`.
+- The game runs locally in a browser through `bun run dev`.
 - The app has no backend, accounts, cloud saves, or server-side leaderboard.
 - The board is always `10x8`, with 80 cells and 40 pairs.
 - Relaxed mode has no countdown.
@@ -37,7 +37,7 @@
 - Create: `src/vite-env.d.ts`
 
 **Interfaces:**
-- Produces: `npm run dev`, `npm run build`, and `npm test` commands.
+- Produces: `bun run dev`, `bun run build`, and `bun run test` commands.
 - Produces: a visible React shell that later tasks replace with the game.
 
 - [ ] **Step 1: Create Vite React TypeScript files**
@@ -46,13 +46,13 @@ Use `apply_patch` to create the listed files with React, Vite, TypeScript, and V
 
 - [ ] **Step 2: Install dependencies**
 
-Run: `npm install`
+Run: `bun install`
 
-Expected: dependencies install and `package-lock.json` is created.
+Expected: dependencies install and `bun.lock` is created.
 
 - [ ] **Step 3: Verify scaffold**
 
-Run: `npm run build`
+Run: `bun run build`
 
 Expected: TypeScript and Vite build complete with exit code 0.
 
@@ -80,7 +80,7 @@ Create tests asserting a `10x8` board, 80 occupied cells, even tile counts, and 
 
 - [ ] **Step 2: Run board tests and verify RED**
 
-Run: `npm test -- src/game/board.test.ts --run`
+Run: `bun run test -- src/game/board.test.ts --run`
 
 Expected: fail because `src/game/board.ts` does not exist yet.
 
@@ -90,7 +90,7 @@ Implement `createBoard`, `getCell`, `setCell`, `clearCells`, `countRemainingPair
 
 - [ ] **Step 4: Run board tests and verify GREEN**
 
-Run: `npm test -- src/game/board.test.ts --run`
+Run: `bun run test -- src/game/board.test.ts --run`
 
 Expected: pass.
 
@@ -100,7 +100,7 @@ Create tests for direct path, one turn, two turns, outside-border routing, block
 
 - [ ] **Step 6: Run path tests and verify RED**
 
-Run: `npm test -- src/game/pathfinding.test.ts --run`
+Run: `bun run test -- src/game/pathfinding.test.ts --run`
 
 Expected: fail because `findConnection` is not implemented.
 
@@ -110,7 +110,7 @@ Implement a padded-board search with direct, one-turn, and two-turn path checks.
 
 - [ ] **Step 8: Run path tests and verify GREEN**
 
-Run: `npm test -- src/game/pathfinding.test.ts --run`
+Run: `bun run test -- src/game/pathfinding.test.ts --run`
 
 Expected: pass.
 
@@ -120,7 +120,7 @@ Create tests for base allowance, failed timed game, relaxed game, 107 seconds re
 
 - [ ] **Step 10: Run reward tests and verify RED**
 
-Run: `npm test -- src/game/shuffleRewards.test.ts --run`
+Run: `bun run test -- src/game/shuffleRewards.test.ts --run`
 
 Expected: fail because `calculateNextShuffleAllowance` is not implemented.
 
@@ -130,7 +130,7 @@ Implement the fixed threshold and injectable random die roll.
 
 - [ ] **Step 12: Run all game tests**
 
-Run: `npm test -- --run`
+Run: `bun run test -- --run`
 
 Expected: all game tests pass.
 
@@ -174,12 +174,12 @@ Add responsive desktop CSS with stable `10x8` board dimensions, clear selected s
 
 - [ ] **Step 6: Verify app build**
 
-Run: `npm run build`
+Run: `bun run build`
 
 Expected: build completes with exit code 0.
 
 - [ ] **Step 7: Run tests**
 
-Run: `npm test -- --run`
+Run: `bun run test -- --run`
 
 Expected: all tests pass.

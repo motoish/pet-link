@@ -10,7 +10,7 @@ The first version should feel complete enough to play casually, while keeping th
 
 ## Product Scope
 
-The game is a local web app built with Vite, React, and TypeScript. Players start it with `npm run dev` and play in a desktop browser.
+The game is a local web app built with Vite, React, TypeScript, and Bun. Players start it with `bun run dev` and play in a desktop browser.
 
 Included in version one:
 
