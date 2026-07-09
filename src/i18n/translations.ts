@@ -76,8 +76,8 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "reward.resultPrefix": "奖励结果",
     "reward.result.shuffle": "打乱骰子 {roll} 点，下局打乱 {allowance} 次",
     "reward.result.hint": "提示骰子 {roll} 点，下局提示 {allowance} 次",
-    "reward.current.shuffle": "上局打乱骰子 {roll} 点，本局打乱 {allowance} 次",
-    "reward.current.hint": "上局提示骰子 {roll} 点，本局提示 {allowance} 次"
+    "reward.current.shuffle": "上局打乱骰子 {roll} 点，本局打乱累计至 {allowance} 次",
+    "reward.current.hint": "上局提示骰子 {roll} 点，本局提示累计至 {allowance} 次"
   },
   en: {
     "app.eyebrow": "Pet Link",
