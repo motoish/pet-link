@@ -20,7 +20,7 @@ Included in version one:
 - One fixed normal board: `10x8`.
 - Built-in lightweight pet SVG tiles.
 - New game, hint, shuffle, pause, and resume controls.
-- Shuffle allowance starts at 1 per game and can gain bonus uses from the previous game's completion speed.
+- Shuffle allowance starts at 1 per game and can gain bonus uses from the previous timed game's remaining time.
 - Local best records and settings stored in `localStorage`.
 - Unit tests for board generation and path matching.
 
@@ -189,15 +189,15 @@ Hint finds the first currently removable pair and highlights it briefly. If no p
 
 Each new game starts with 1 available shuffle. Shuffle randomizes remaining tiles while preserving their ids and count. Using shuffle consumes 1 available shuffle. If the player has 0 shuffles left, the shuffle button is disabled.
 
-After a completed game, the next game may receive bonus shuffles based on the completed game's speed. The bonus is decided with six-sided dice so the reward has a small playful chance element:
+After a completed timed game, the next game may receive bonus shuffles based on the completed game's remaining time. The reward uses the 6-minute timed-mode duration as the baseline:
 
-- Finish under 4 minutes: roll 2 dice and gain half the total, rounded up.
-- Finish from 4 to under 6 minutes: roll 1 die and gain half the result, rounded up.
-- Finish in 6 minutes or more: roll 1 die and gain 1 bonus shuffle only when the result is 5 or 6.
+- Remaining time below `6 minutes x 20%` gives no bonus. This means less than 72 seconds remaining gives 0 bonus shuffles.
+- Remaining time from `6 minutes x 20%` up to, but not including, `6 minutes x 30%` gives no bonus. This means 72 to 107 seconds remaining gives 0 bonus shuffles.
+- Remaining time greater than or equal to `6 minutes x 30%` gives one six-sided dice roll. This means 108 seconds or more remaining earns a dice roll, and the dice result is the number of bonus shuffles for the next game.
 
-The next game's shuffle allowance is `1 + bonus shuffles`. Failed timed games do not award bonus shuffles. If there is no previous completed game, the allowance is 1.
+The next game's shuffle allowance is `1 + bonus shuffles`. Failed timed games and relaxed games do not award bonus shuffles. If there is no previous qualifying timed completion, the allowance is 1.
 
-When a bonus applies, the new game dialog or status area should briefly show the speed tier, dice roll, and final shuffle allowance so the reward feels understandable.
+When a bonus applies, the new game dialog or status area should briefly show the remaining time, threshold reached, dice roll, and final shuffle allowance so the reward feels understandable.
 
 Shuffle should try a bounded number of randomizations to produce at least one available match. If no match is found after the bounded attempts, the game may still show the shuffled board and allow another shuffle if allowance remains.
 
@@ -208,7 +208,7 @@ Use `localStorage` for lightweight local persistence:
 - Last selected mode.
 - Best relaxed completion time.
 - Best timed score.
-- Previous completed game speed tier for shuffle rewards.
+- Previous timed completion reward result for shuffle rewards.
 
 No save-file export is required in version one.
 
@@ -227,7 +227,9 @@ Unit tests should cover:
 - Different tile ids fail.
 - Empty cells cannot be selected as matches.
 - Shuffle allowance starts at 1 without previous completion data.
-- Shuffle allowance includes dice-based bonus after a completed game.
+- Shuffle allowance gives no bonus when timed-mode remaining time is below 72 seconds.
+- Shuffle allowance gives no bonus when timed-mode remaining time is 72 to 107 seconds.
+- Shuffle allowance includes one dice-roll bonus when timed-mode remaining time is at least 108 seconds.
 - Failed timed games do not award shuffle bonuses.
 
 Manual browser verification should cover:
