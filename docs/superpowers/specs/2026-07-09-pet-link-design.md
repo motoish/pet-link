@@ -17,9 +17,10 @@ Included in version one:
 - Classic link-link matching rules.
 - Relaxed mode with no countdown.
 - Timed challenge mode with a countdown.
-- Three board sizes: easy `8x6`, normal `10x8`, hard `12x8`.
+- One fixed normal board: `10x8`.
 - Built-in lightweight pet SVG tiles.
 - New game, hint, shuffle, pause, and resume controls.
+- Shuffle allowance starts at 1 per game and can gain bonus uses from the previous game's completion speed.
 - Local best records and settings stored in `localStorage`.
 - Unit tests for board generation and path matching.
 
@@ -51,25 +52,15 @@ The game should always render the board from state instead of mutating DOM eleme
 
 Relaxed mode is the default. It has no countdown and tracks elapsed time, moves, hints used, and shuffles used. It is for calm play and learning the board.
 
-Timed mode adds a countdown. The first version uses one duration per difficulty:
-
-- Easy: 4 minutes.
-- Normal: 6 minutes.
-- Hard: 8 minutes.
+Timed mode adds a 6-minute countdown on the same fixed `10x8` board.
 
 Timed mode tracks score. Removing a pair gives points, and finishing with remaining time adds a small time bonus. If time reaches zero before the board is cleared, the game ends in a failure state.
 
-## Difficulty
+## Board
 
-Difficulty controls only board size and timed-mode duration in the first version. It does not change tile art, rule complexity, or special mechanics.
+Version one has only normal difficulty. The board is always `10x8`, with 80 cells and 40 pairs.
 
-The planned board sizes are:
-
-- Easy: `8x6`, 48 cells, 24 pairs.
-- Normal: `10x8`, 80 cells, 40 pairs.
-- Hard: `12x8`, 96 cells, 48 pairs.
-
-Each board must contain an even number of cells. Tile types can repeat across many pairs when the board has more pairs than unique pet assets.
+The fixed board keeps the first version focused and makes balance easier. Tile types can repeat across many pairs because the board has more pairs than unique pet assets.
 
 ## Interface
 
@@ -77,7 +68,7 @@ The first screen is the playable game, not a landing page.
 
 The layout has four main areas:
 
-- Header: game title, mode switch, difficulty selector.
+- Header: game title, mode switch, fixed board label.
 - Status bar: elapsed time or countdown, score, moves, remaining pairs.
 - Board: a stable grid of pet tiles.
 - Controls: new game, hint, shuffle, pause or resume.
@@ -154,7 +145,6 @@ Responsibilities:
 The game state includes:
 
 - Current mode.
-- Current difficulty.
 - Board dimensions.
 - Grid cells.
 - Selected cell, if any.
@@ -163,6 +153,7 @@ The game state includes:
 - Remaining pair count.
 - Elapsed time or remaining time.
 - Score.
+- Remaining shuffle allowance.
 - Pause state.
 - End state: playing, paused, won, or failed.
 - Hint and shuffle usage counts.
@@ -196,16 +187,28 @@ The returned path is used for the temporary connection-line overlay.
 
 Hint finds the first currently removable pair and highlights it briefly. If no pair is available, the game can offer shuffle.
 
-Shuffle randomizes remaining tiles while preserving their ids and count. It should try a bounded number of shuffles to produce at least one available match. If no match is found after the bounded attempts, the game may still show the shuffled board and allow another shuffle.
+Each new game starts with 1 available shuffle. Shuffle randomizes remaining tiles while preserving their ids and count. Using shuffle consumes 1 available shuffle. If the player has 0 shuffles left, the shuffle button is disabled.
+
+After a completed game, the next game may receive bonus shuffles based on the completed game's speed. The bonus is decided with six-sided dice so the reward has a small playful chance element:
+
+- Finish under 4 minutes: roll 2 dice and gain half the total, rounded up.
+- Finish from 4 to under 6 minutes: roll 1 die and gain half the result, rounded up.
+- Finish in 6 minutes or more: roll 1 die and gain 1 bonus shuffle only when the result is 5 or 6.
+
+The next game's shuffle allowance is `1 + bonus shuffles`. Failed timed games do not award bonus shuffles. If there is no previous completed game, the allowance is 1.
+
+When a bonus applies, the new game dialog or status area should briefly show the speed tier, dice roll, and final shuffle allowance so the reward feels understandable.
+
+Shuffle should try a bounded number of randomizations to produce at least one available match. If no match is found after the bounded attempts, the game may still show the shuffled board and allow another shuffle if allowance remains.
 
 ## Persistence
 
 Use `localStorage` for lightweight local persistence:
 
 - Last selected mode.
-- Last selected difficulty.
-- Best relaxed completion time per difficulty.
-- Best timed score per difficulty.
+- Best relaxed completion time.
+- Best timed score.
+- Previous completed game speed tier for shuffle rewards.
 
 No save-file export is required in version one.
 
@@ -215,7 +218,7 @@ Unit tests should cover:
 
 - Board generation creates an even number of tiles.
 - Every generated tile id appears an even number of times.
-- Generated boards match the requested dimensions.
+- Generated boards are always `10x8`.
 - Direct path matching succeeds when unobstructed.
 - One-turn path matching succeeds when unobstructed.
 - Two-turn path matching succeeds when unobstructed.
@@ -223,14 +226,17 @@ Unit tests should cover:
 - Blocked paths fail.
 - Different tile ids fail.
 - Empty cells cannot be selected as matches.
+- Shuffle allowance starts at 1 without previous completion data.
+- Shuffle allowance includes dice-based bonus after a completed game.
+- Failed timed games do not award shuffle bonuses.
 
 Manual browser verification should cover:
 
-- Starting a new game in each difficulty.
+- Starting a new `10x8` game.
 - Switching between relaxed and timed modes.
 - Valid and invalid matches.
 - Hint behavior.
-- Shuffle behavior.
+- Shuffle allowance, disabled state, and bonus display.
 - Pause and resume.
 - Victory dialog.
 - Timed failure dialog.
