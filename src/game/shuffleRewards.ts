@@ -1,4 +1,4 @@
-import type { GameMode } from "./types";
+import type { GameMode } from "@src/game/types";
 
 export const BASE_SHUFFLE_ALLOWANCE = 1;
 export const BASE_HINT_ALLOWANCE = 1;

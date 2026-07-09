@@ -1,5 +1,5 @@
-import type { Language } from "../i18n/translations";
-import { t } from "../i18n/translations";
+import type { Language } from "@src/i18n/translations";
+import { t } from "@src/i18n/translations";
 
 type ControlsProps = {
   language: Language;

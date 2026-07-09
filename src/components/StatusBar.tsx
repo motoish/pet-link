@@ -1,6 +1,6 @@
-import type { GameMode } from "../game/types";
-import type { Language } from "../i18n/translations";
-import { t } from "../i18n/translations";
+import type { GameMode } from "@src/game/types";
+import type { Language } from "@src/i18n/translations";
+import { t } from "@src/i18n/translations";
 
 type StatusBarProps = {
   language: Language;

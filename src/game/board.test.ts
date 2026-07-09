@@ -1,5 +1,3 @@
-import { describe, expect, test } from "vitest";
-
 import {
   BOARD_COLUMNS,
   BOARD_ROWS,
@@ -9,8 +7,9 @@ import {
   findAvailablePair,
   getCell,
   shuffleRemainingTiles
-} from "./board";
-import type { Board, Point } from "./types";
+} from "@src/game/board";
+import type { Board, Point } from "@src/game/types";
+import { describe, expect, test } from "vitest";
 
 const PET_IDS = [
   "cat",

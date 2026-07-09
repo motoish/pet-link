@@ -1,7 +1,6 @@
+import { findConnection } from "@src/game/pathfinding";
+import type { Board } from "@src/game/types";
 import { describe, expect, test } from "vitest";
-
-import { findConnection } from "./pathfinding";
-import type { Board } from "./types";
 
 function boardFromRows(rows: Array<Array<string | null>>): Board {
   return {

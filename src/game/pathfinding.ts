@@ -1,4 +1,4 @@
-import type { Board, Point } from "./types";
+import type { Board, Point } from "@src/game/types";
 
 export function findConnection(board: Board, from: Point, to: Point): Point[] | null {
   const fromCell = getOriginalCell(board, from);

@@ -1,6 +1,6 @@
-import { BOARD_COLUMNS, BOARD_ROWS } from "../game/board";
-import type { Board as GameBoard, Point } from "../game/types";
-import { Tile } from "./Tile";
+import { Tile } from "@src/components/Tile";
+import { BOARD_COLUMNS, BOARD_ROWS } from "@src/game/board";
+import type { Board as GameBoard, Point } from "@src/game/types";
 
 type BoardProps = {
   board: GameBoard;

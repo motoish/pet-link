@@ -1,5 +1,5 @@
-import { findConnection } from "./pathfinding";
-import type { Board, Cell, MatchHint, Point, RandomFn } from "./types";
+import { findConnection } from "@src/game/pathfinding";
+import type { Board, Cell, MatchHint, Point, RandomFn } from "@src/game/types";
 
 export const BOARD_COLUMNS = 10;
 export const BOARD_ROWS = 8;

@@ -1,6 +1,5 @@
+import { isLanguage, LANGUAGES, t } from "@src/i18n/translations";
 import { describe, expect, test } from "vitest";
-
-import { isLanguage, LANGUAGES, t } from "./translations";
 
 describe("translations", () => {
   test("supports Chinese, English, and Japanese", () => {

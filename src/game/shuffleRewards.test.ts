@@ -1,11 +1,10 @@
-import { describe, expect, test } from "vitest";
-
 import {
   calculateRewardAllowances,
   createBaseRewardAllowances,
   HINT_REWARD_THRESHOLD_SECONDS,
   SHUFFLE_REWARD_THRESHOLD_SECONDS
-} from "./shuffleRewards";
+} from "@src/game/shuffleRewards";
+import { describe, expect, test } from "vitest";
 
 function rolling(...values: number[]) {
   let index = 0;

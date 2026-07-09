@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-
-import { PET_TILES } from "./assets/pets";
-import { Board as BoardView } from "./components/Board";
-import { Controls } from "./components/Controls";
-import { GameDialog } from "./components/GameDialog";
-import { Header } from "./components/Header";
-import { formatTime, StatusBar } from "./components/StatusBar";
+import { PET_TILES } from "@src/assets/pets";
+import { Board as BoardView } from "@src/components/Board";
+import { Controls } from "@src/components/Controls";
+import { GameDialog } from "@src/components/GameDialog";
+import { Header } from "@src/components/Header";
+import { formatTime, StatusBar } from "@src/components/StatusBar";
 import {
   clearCells,
   countRemainingPairs,
@@ -13,17 +11,17 @@ import {
   findAvailablePair,
   getCell,
   shuffleRemainingTiles
-} from "./game/board";
-import { findConnection } from "./game/pathfinding";
-import type { PreviousGameResult, RewardAllowances } from "./game/shuffleRewards";
+} from "@src/game/board";
+import { findConnection } from "@src/game/pathfinding";
+import type { PreviousGameResult, RewardAllowances } from "@src/game/shuffleRewards";
 import {
   calculateRewardAllowances,
   createBaseRewardAllowances,
   TIMED_MODE_SECONDS
-} from "./game/shuffleRewards";
-import type { Board, GameMode, Point } from "./game/types";
-import type { Language } from "./i18n/translations";
-import { t } from "./i18n/translations";
+} from "@src/game/shuffleRewards";
+import type { Board, GameMode, Point } from "@src/game/types";
+import type { Language } from "@src/i18n/translations";
+import { t } from "@src/i18n/translations";
 import {
   consumePendingReward,
   loadBestRelaxedTime,
@@ -36,7 +34,8 @@ import {
   saveLastMode,
   savePendingReward,
   savePreviousGameResult
-} from "./storage/localRecords";
+} from "@src/storage/localRecords";
+import { useEffect, useState } from "react";
 
 type GameState = "playing" | "paused" | "won" | "failed";
 

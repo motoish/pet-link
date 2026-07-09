@@ -32,6 +32,17 @@ export default tseslint.config(
         { fixStyle: "separate-type-imports", prefer: "type-imports" }
       ],
       "comma-spacing": ["error", { before: false, after: true }],
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["./*", "../*"],
+              message: "Use the @src/* alias for source imports."
+            }
+          ]
+        }
+      ],
       "object-curly-spacing": ["error", "always"],
       "react-refresh/only-export-components": [
         "warn",
