@@ -160,19 +160,20 @@ h1 {
   display: grid;
   align-content: center;
   gap: 4px;
-  border: 1px solid #d7dfcb;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.86);
-  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  padding: 8px 2px;
 }
 
 .status-item span {
-  color: #60705f;
+  color: #5d7061;
   font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .status-item strong {
-  font-size: 1.35rem;
+  color: #25313b;
+  font-size: 1.55rem;
   line-height: 1;
 }
 
