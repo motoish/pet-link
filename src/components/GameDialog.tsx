@@ -3,11 +3,12 @@ type GameDialogProps = {
   title: string;
   detail: string;
   primaryLabel: string;
+  resumeLabel: string;
   onPrimary: () => void;
   onResume: () => void;
 };
 
-export function GameDialog({ state, title, detail, primaryLabel, onPrimary, onResume }: GameDialogProps) {
+export function GameDialog({ state, title, detail, primaryLabel, resumeLabel, onPrimary, onResume }: GameDialogProps) {
   if (state === "playing") {
     return null;
   }
@@ -18,7 +19,7 @@ export function GameDialog({ state, title, detail, primaryLabel, onPrimary, onRe
         <h2 id="dialog-title">{title}</h2>
         <p>{detail}</p>
         <div className="dialog-actions">
-          {state === "paused" && <button onClick={onResume}>继续</button>}
+          {state === "paused" && <button onClick={onResume}>{resumeLabel}</button>}
           <button onClick={onPrimary}>{primaryLabel}</button>
         </div>
       </section>

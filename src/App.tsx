@@ -26,13 +26,16 @@ import {
   consumePendingReward,
   loadBestRelaxedTime,
   loadBestTimedScore,
+  loadLanguage,
   loadLastMode,
   saveBestRelaxedTime,
   saveBestTimedScore,
+  saveLanguage,
   saveLastMode,
   savePendingReward,
   savePreviousGameResult
 } from "./storage/localRecords";
+import { t, type Language } from "./i18n/translations";
 
 type GameState = "playing" | "paused" | "won" | "failed";
 
@@ -46,6 +49,7 @@ function createFreshBoard(): Board {
 
 export default function App() {
   const [mode, setMode] = useState<GameMode>(() => loadLastMode());
+  const [language, setLanguage] = useState<Language>(() => loadLanguage());
   const [board, setBoard] = useState<Board>(() => createFreshBoard());
   const [selected, setSelected] = useState<Point | null>(null);
   const [connectionPath, setConnectionPath] = useState<Point[] | null>(null);
@@ -110,6 +114,11 @@ export default function App() {
 
   function handleModeChange(nextMode: GameMode) {
     startNewGame(nextMode);
+  }
+
+  function handleLanguageChange(nextLanguage: Language) {
+    setLanguage(nextLanguage);
+    saveLanguage(nextLanguage);
   }
 
   function handleTileClick(point: Point) {
@@ -230,14 +239,20 @@ export default function App() {
     });
   }
 
-  const dialog = getDialogState(gameState, mode, elapsedSeconds, remainingSeconds, score, completionReward);
-  const activeRewardText = formatRewardSummary(rewardAllowances, "本局奖励");
+  const dialog = getDialogState(gameState, mode, language, elapsedSeconds, remainingSeconds, score, completionReward);
+  const activeRewardText = formatRewardSummary(language, rewardAllowances, t(language, "reward.currentPrefix"));
 
   return (
     <main className="app-shell">
       <section className="game-surface">
-        <Header mode={mode} onModeChange={handleModeChange} />
+        <Header
+          mode={mode}
+          language={language}
+          onModeChange={handleModeChange}
+          onLanguageChange={handleLanguageChange}
+        />
         <StatusBar
+          language={language}
           mode={mode}
           elapsedSeconds={elapsedSeconds}
           remainingSeconds={remainingSeconds}
@@ -258,6 +273,7 @@ export default function App() {
           onTileClick={handleTileClick}
         />
         <Controls
+          language={language}
           paused={gameState === "paused"}
           shuffleAllowance={rewardAllowances.shuffleAllowance}
           hintAllowance={rewardAllowances.hintAllowance}
@@ -272,6 +288,7 @@ export default function App() {
         title={dialog.title}
         detail={dialog.detail}
         primaryLabel={dialog.primaryLabel}
+        resumeLabel={t(language, "dialog.resume")}
         onPrimary={() => startNewGame()}
         onResume={() => setGameState("playing")}
       />
@@ -295,6 +312,7 @@ function ensureBoardHasMatch(board: Board): Board {
 function getDialogState(
   gameState: GameState,
   mode: GameMode,
+  language: Language,
   elapsedSeconds: number,
   remainingSeconds: number,
   score: number,
@@ -302,36 +320,36 @@ function getDialogState(
 ) {
   if (gameState === "paused") {
     return {
-      title: "已暂停",
-      detail: "休息一下，棋盘会保持原样。",
-      primaryLabel: "新游戏"
+      title: t(language, "dialog.paused.title"),
+      detail: t(language, "dialog.paused.detail"),
+      primaryLabel: t(language, "controls.newGame")
     };
   }
 
   if (gameState === "won") {
-    const rewardText = completionReward ? formatRewardSummary(completionReward, "奖励结果") : null;
+    const rewardText = completionReward ? formatRewardSummary(language, completionReward, t(language, "reward.resultPrefix")) : null;
     return {
-      title: "通关",
+      title: t(language, "dialog.won.title"),
       detail:
         mode === "timed"
-          ? `得分 ${score}，剩余 ${formatTime(remainingSeconds)}。${rewardText ?? "未获得额外奖励。"}`
-          : `用时 ${formatTime(elapsedSeconds)}。`,
-      primaryLabel: "再来一局"
+          ? `${t(language, "status.score")} ${score}，${t(language, "status.remainingTime")} ${formatTime(remainingSeconds)}。${rewardText ?? t(language, "dialog.noReward")}`
+          : `${t(language, "status.elapsed")} ${formatTime(elapsedSeconds)}。`,
+      primaryLabel: t(language, "dialog.playAgain")
     };
   }
 
   if (gameState === "failed") {
     return {
-      title: "时间到",
-      detail: "这局没有获得打乱奖励。",
-      primaryLabel: "重新开始"
+      title: t(language, "dialog.failed.title"),
+      detail: t(language, "dialog.failed.detail"),
+      primaryLabel: t(language, "dialog.restart")
     };
   }
 
   return {
     title: "",
     detail: "",
-    primaryLabel: "新游戏"
+    primaryLabel: t(language, "controls.newGame")
   };
 }
 
@@ -339,15 +357,15 @@ function samePoint(first: Point, second: Point): boolean {
   return first.row === second.row && first.column === second.column;
 }
 
-function formatRewardSummary(reward: RewardAllowances, prefix: string): string | null {
+function formatRewardSummary(language: Language, reward: RewardAllowances, prefix: string): string | null {
   const parts: string[] = [];
 
   if (reward.shuffleDieRoll !== null) {
-    parts.push(`打乱骰子 ${reward.shuffleDieRoll} 点，下局打乱 ${reward.shuffleAllowance} 次`);
+    parts.push(t(language, "reward.shuffle", { roll: reward.shuffleDieRoll, allowance: reward.shuffleAllowance }));
   }
 
   if (reward.hintDieRoll !== null) {
-    parts.push(`提示骰子 ${reward.hintDieRoll} 点，下局提示 ${reward.hintAllowance} 次`);
+    parts.push(t(language, "reward.hint", { roll: reward.hintDieRoll, allowance: reward.hintAllowance }));
   }
 
   return parts.length > 0 ? `${prefix}：${parts.join("；")}` : null;

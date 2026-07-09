@@ -21,6 +21,7 @@ Included in version one:
 - Built-in lightweight pet SVG tiles.
 - New game, hint, shuffle, pause, and resume controls.
 - Shuffle and hint allowances each start at 1 per game and can gain bonus uses from the previous timed game's remaining time.
+- Language switching between Chinese, English, and Japanese.
 - Local best records and settings stored in `localStorage`.
 - Unit tests for board generation and path matching.
 
@@ -69,6 +70,7 @@ The first screen is the playable game, not a landing page.
 The layout has four main areas:
 
 - Header: game title, mode switch, fixed board label.
+- Language selector: Chinese, English, Japanese.
 - Status bar: elapsed time or countdown, score, moves, remaining pairs.
 - Board: a stable grid of pet tiles.
 - Controls: new game, hint, shuffle, pause or resume.
@@ -206,6 +208,7 @@ Shuffle should try a bounded number of randomizations to produce at least one av
 Use `localStorage` for lightweight local persistence:
 
 - Last selected mode.
+- Last selected language.
 - Best relaxed completion time.
 - Best timed score.
 - Previous timed completion reward result for hint and shuffle rewards.
@@ -237,6 +240,7 @@ Manual browser verification should cover:
 
 - Starting a new `10x8` game.
 - Switching between relaxed and timed modes.
+- Switching between Chinese, English, and Japanese UI text.
 - Valid and invalid matches.
 - Hint allowance, disabled state, and bonus display.
 - Shuffle allowance, disabled state, and bonus display.

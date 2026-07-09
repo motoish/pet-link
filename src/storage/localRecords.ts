@@ -1,7 +1,9 @@
 import type { GameMode } from "../game/types";
 import type { PreviousGameResult, RewardAllowances } from "../game/shuffleRewards";
+import { isLanguage, type Language } from "../i18n/translations";
 
 const LAST_MODE_KEY = "pet-link:last-mode";
+const LANGUAGE_KEY = "pet-link:language";
 const BEST_RELAXED_KEY = "pet-link:best-relaxed-time";
 const BEST_TIMED_KEY = "pet-link:best-timed-score";
 const PREVIOUS_GAME_KEY = "pet-link:previous-game";
@@ -14,6 +16,15 @@ export function loadLastMode(): GameMode {
 
 export function saveLastMode(mode: GameMode) {
   localStorage.setItem(LAST_MODE_KEY, mode);
+}
+
+export function loadLanguage(): Language {
+  const value = localStorage.getItem(LANGUAGE_KEY);
+  return value && isLanguage(value) ? value : "zh-CN";
+}
+
+export function saveLanguage(language: Language) {
+  localStorage.setItem(LANGUAGE_KEY, language);
 }
 
 export function loadBestRelaxedTime(): number | null {

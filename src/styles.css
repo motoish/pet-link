@@ -123,6 +123,25 @@ h1 {
   font-weight: 800;
 }
 
+.language-select {
+  display: grid;
+  gap: 4px;
+  min-width: 116px;
+  color: #52605b;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.language-select select {
+  min-height: 42px;
+  border: 1px solid #c8d7bd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #25313b;
+  padding: 0 10px;
+  font: inherit;
+}
+
 .status-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(112px, 1fr));

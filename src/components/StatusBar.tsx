@@ -1,6 +1,8 @@
 import type { GameMode } from "../game/types";
+import { t, type Language } from "../i18n/translations";
 
 type StatusBarProps = {
+  language: Language;
   mode: GameMode;
   elapsedSeconds: number;
   remainingSeconds: number;
@@ -14,6 +16,7 @@ type StatusBarProps = {
 };
 
 export function StatusBar({
+  language,
   mode,
   elapsedSeconds,
   remainingSeconds,
@@ -27,13 +30,13 @@ export function StatusBar({
 }: StatusBarProps) {
   return (
     <section className="status-grid" aria-label="游戏状态">
-      <StatusItem label={mode === "timed" ? "剩余" : "用时"} value={formatTime(mode === "timed" ? remainingSeconds : elapsedSeconds)} />
-      <StatusItem label="分数" value={String(score)} />
-      <StatusItem label="步数" value={String(moves)} />
-      <StatusItem label="剩余" value={`${remainingPairs} 对`} />
-      <StatusItem label="打乱" value={`${shuffleAllowance} 次`} />
-      <StatusItem label="提示" value={`${hintAllowance} 次`} />
-      <StatusItem label="最佳" value={mode === "timed" ? formatNullableScore(bestTimedScore) : formatNullableTime(bestRelaxedTime)} />
+      <StatusItem label={mode === "timed" ? t(language, "status.remainingTime") : t(language, "status.elapsed")} value={formatTime(mode === "timed" ? remainingSeconds : elapsedSeconds)} />
+      <StatusItem label={t(language, "status.score")} value={String(score)} />
+      <StatusItem label={t(language, "status.moves")} value={String(moves)} />
+      <StatusItem label={t(language, "status.remainingPairs")} value={String(remainingPairs)} />
+      <StatusItem label={t(language, "status.shuffle")} value={String(shuffleAllowance)} />
+      <StatusItem label={t(language, "status.hint")} value={String(hintAllowance)} />
+      <StatusItem label={t(language, "status.best")} value={mode === "timed" ? formatNullableScore(bestTimedScore) : formatNullableTime(bestRelaxedTime)} />
     </section>
   );
 }
