@@ -7,8 +7,6 @@ type StatusBarProps = {
   elapsedSeconds: number;
   remainingSeconds: number;
   score: number;
-  moves: number;
-  remainingPairs: number;
   shuffleAllowance: number;
   hintAllowance: number;
   bestRelaxedTime: number | null;
@@ -21,8 +19,6 @@ export function StatusBar({
   elapsedSeconds,
   remainingSeconds,
   score,
-  moves,
-  remainingPairs,
   shuffleAllowance,
   hintAllowance,
   bestRelaxedTime,
@@ -32,8 +28,6 @@ export function StatusBar({
     <section className="status-grid" aria-label="游戏状态">
       <StatusItem label={mode === "timed" ? t(language, "status.remainingTime") : t(language, "status.elapsed")} value={formatTime(mode === "timed" ? remainingSeconds : elapsedSeconds)} />
       <StatusItem label={t(language, "status.score")} value={String(score)} />
-      <StatusItem label={t(language, "status.moves")} value={String(moves)} />
-      <StatusItem label={t(language, "status.remainingPairs")} value={String(remainingPairs)} />
       <StatusItem label={t(language, "status.shuffle")} value={String(shuffleAllowance)} />
       <StatusItem label={t(language, "status.hint")} value={String(hintAllowance)} />
       <StatusItem label={t(language, "status.best")} value={mode === "timed" ? formatNullableScore(bestTimedScore) : formatNullableTime(bestRelaxedTime)} />

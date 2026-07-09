@@ -71,7 +71,7 @@ The layout has four main areas:
 
 - Header: game title, mode switch, fixed board label.
 - Language selector: Chinese, English, Japanese.
-- Status bar: elapsed time or countdown, score, moves, remaining pairs.
+- Status bar: elapsed time or countdown, score, shuffle allowance, hint allowance, best record.
 - Board: a stable grid of pet tiles.
 - Controls: new game, hint, shuffle, pause or resume.
 

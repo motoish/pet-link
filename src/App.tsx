@@ -258,8 +258,6 @@ export default function App() {
             elapsedSeconds={elapsedSeconds}
             remainingSeconds={remainingSeconds}
             score={score}
-            moves={moves}
-            remainingPairs={remainingPairs}
             shuffleAllowance={rewardAllowances.shuffleAllowance}
             hintAllowance={rewardAllowances.hintAllowance}
             bestRelaxedTime={bestRelaxedTime}
