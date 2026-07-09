@@ -27,11 +27,23 @@ export function StatusBar({
 }: StatusBarProps) {
   return (
     <section className="status-grid" aria-label="游戏状态">
-      <StatusItem label={mode === "timed" ? t(language, "status.remainingTime") : t(language, "status.elapsed")} value={formatTime(mode === "timed" ? remainingSeconds : elapsedSeconds)} />
+      <StatusItem
+        label={
+          mode === "timed" ? t(language, "status.remainingTime") : t(language, "status.elapsed")
+        }
+        value={formatTime(mode === "timed" ? remainingSeconds : elapsedSeconds)}
+      />
       <StatusItem label={t(language, "status.score")} value={String(score)} />
       <StatusItem label={t(language, "status.shuffle")} value={String(shuffleAllowance)} />
       <StatusItem label={t(language, "status.hint")} value={String(hintAllowance)} />
-      <StatusItem label={t(language, "status.best")} value={mode === "timed" ? formatNullableScore(bestTimedScore) : formatNullableTime(bestRelaxedTime)} />
+      <StatusItem
+        label={t(language, "status.best")}
+        value={
+          mode === "timed"
+            ? formatNullableScore(bestTimedScore)
+            : formatNullableTime(bestRelaxedTime)
+        }
+      />
     </section>
   );
 }

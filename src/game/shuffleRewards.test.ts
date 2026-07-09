@@ -51,7 +51,11 @@ describe("calculateRewardAllowances", () => {
 
   test("does not award either bonus below the hint threshold", () => {
     const result = calculateRewardAllowances({
-      previousGame: { mode: "timed", completed: true, remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS - 1 },
+      previousGame: {
+        mode: "timed",
+        completed: true,
+        remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS - 1
+      },
       rollDie: rolling(6)
     });
 
@@ -60,7 +64,11 @@ describe("calculateRewardAllowances", () => {
 
   test("awards only the hint die at 72 remaining seconds", () => {
     const result = calculateRewardAllowances({
-      previousGame: { mode: "timed", completed: true, remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS },
+      previousGame: {
+        mode: "timed",
+        completed: true,
+        remainingSeconds: HINT_REWARD_THRESHOLD_SECONDS
+      },
       rollDie: rolling(5)
     });
 
@@ -76,7 +84,11 @@ describe("calculateRewardAllowances", () => {
 
   test("awards both dice at 108 remaining seconds", () => {
     const result = calculateRewardAllowances({
-      previousGame: { mode: "timed", completed: true, remainingSeconds: SHUFFLE_REWARD_THRESHOLD_SECONDS },
+      previousGame: {
+        mode: "timed",
+        completed: true,
+        remainingSeconds: SHUFFLE_REWARD_THRESHOLD_SECONDS
+      },
       rollDie: rolling(4, 2)
     });
 

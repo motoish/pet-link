@@ -112,7 +112,8 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "reward.resultPrefix": "Reward result",
     "reward.result.shuffle": "Shuffle die rolled {roll}; next round has {allowance} shuffles",
     "reward.result.hint": "Hint die rolled {roll}; next round has {allowance} hints",
-    "reward.current.shuffle": "Previous shuffle die rolled {roll}; this round has {allowance} shuffles",
+    "reward.current.shuffle":
+      "Previous shuffle die rolled {roll}; this round has {allowance} shuffles",
     "reward.current.hint": "Previous hint die rolled {roll}; this round has {allowance} hints"
   },
   ja: {
@@ -157,8 +158,15 @@ export function isLanguage(value: string): value is Language {
   return LANGUAGES.some((language) => language.code === value);
 }
 
-export function t(language: Language, key: string, values: Record<string, string | number> = {}): string {
-  const template = translations[language][key as TranslationKey] ?? translations["zh-CN"][key as TranslationKey] ?? key;
+export function t(
+  language: Language,
+  key: string,
+  values: Record<string, string | number> = {}
+): string {
+  const template =
+    translations[language][key as TranslationKey] ??
+    translations["zh-CN"][key as TranslationKey] ??
+    key;
 
   return Object.entries(values).reduce((text, [name, value]) => {
     return text.split(`{${name}}`).join(String(value));

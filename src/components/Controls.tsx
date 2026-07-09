@@ -12,7 +12,16 @@ type ControlsProps = {
   onPauseToggle: () => void;
 };
 
-export function Controls({ language, paused, shuffleAllowance, hintAllowance, onNewGame, onHint, onShuffle, onPauseToggle }: ControlsProps) {
+export function Controls({
+  language,
+  paused,
+  shuffleAllowance,
+  hintAllowance,
+  onNewGame,
+  onHint,
+  onShuffle,
+  onPauseToggle
+}: ControlsProps) {
   return (
     <section className="controls" aria-label="游戏操作">
       <button onClick={onNewGame}>{t(language, "controls.newGame")}</button>
@@ -22,7 +31,9 @@ export function Controls({ language, paused, shuffleAllowance, hintAllowance, on
       <button onClick={onShuffle} disabled={shuffleAllowance <= 0}>
         {t(language, "controls.shuffle")}
       </button>
-      <button onClick={onPauseToggle}>{paused ? t(language, "controls.resume") : t(language, "controls.pause")}</button>
+      <button onClick={onPauseToggle}>
+        {paused ? t(language, "controls.resume") : t(language, "controls.pause")}
+      </button>
     </section>
   );
 }

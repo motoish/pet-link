@@ -52,9 +52,7 @@ export function clearCells(board: Board, first: Point, second: Point): Board {
 }
 
 export function countRemainingPairs(board: Board): number {
-  const occupiedCount = board.cells
-    .flat()
-    .filter((cell) => cell.tileId !== null).length;
+  const occupiedCount = board.cells.flat().filter((cell) => cell.tileId !== null).length;
   return occupiedCount / 2;
 }
 

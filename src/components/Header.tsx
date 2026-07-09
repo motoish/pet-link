@@ -18,16 +18,25 @@ export function Header({ mode, language, onModeChange, onLanguageChange }: Heade
       </div>
       <div className="header-controls" aria-label="游戏设置">
         <div className="segmented-control">
-          <button className={mode === "relaxed" ? "active" : ""} onClick={() => onModeChange("relaxed")}>
+          <button
+            className={mode === "relaxed" ? "active" : ""}
+            onClick={() => onModeChange("relaxed")}
+          >
             {t(language, "mode.relaxed")}
           </button>
-          <button className={mode === "timed" ? "active" : ""} onClick={() => onModeChange("timed")}>
+          <button
+            className={mode === "timed" ? "active" : ""}
+            onClick={() => onModeChange("timed")}
+          >
             {t(language, "mode.timed")}
           </button>
         </div>
         <label className="language-select">
           <span>{t(language, "settings.language")}</span>
-          <select value={language} onChange={(event) => onLanguageChange(event.target.value as Language)}>
+          <select
+            value={language}
+            onChange={(event) => onLanguageChange(event.target.value as Language)}
+          >
             {LANGUAGES.map((option) => (
               <option key={option.code} value={option.code}>
                 {option.label}

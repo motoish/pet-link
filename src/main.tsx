@@ -1,5 +1,4 @@
 import "@src/styles.css";
-
 import App from "@src/App";
 import React from "react";
 import ReactDOM from "react-dom/client";

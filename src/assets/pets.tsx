@@ -14,7 +14,13 @@ function Face({ children, color, accent }: { children: ReactNode; color: string;
       <circle cx="32" cy="34" r="22" fill={color} />
       <circle cx="24" cy="31" r="3" fill="#263238" />
       <circle cx="40" cy="31" r="3" fill="#263238" />
-      <path d="M27 42c3 3 7 3 10 0" fill="none" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
+      <path
+        d="M27 42c3 3 7 3 10 0"
+        fill="none"
+        stroke="#263238"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
       <circle cx="32" cy="37" r="3" fill={accent} />
       {children}
     </svg>
@@ -29,7 +35,12 @@ export const PET_TILES: PetTile[] = [
     accent: "#d45d5d",
     icon: (
       <Face color="#f6c177" accent="#d45d5d">
-        <path d="M16 23 21 9l10 12M48 23 43 9 33 21" fill="#f6c177" stroke="#263238" strokeWidth="3" />
+        <path
+          d="M16 23 21 9l10 12M48 23 43 9 33 21"
+          fill="#f6c177"
+          stroke="#263238"
+          strokeWidth="3"
+        />
       </Face>
     )
   },
@@ -91,7 +102,13 @@ export const PET_TILES: PetTile[] = [
         <path d="M12 33c10-14 28-14 40 0-12 14-30 14-40 0Z" fill="#67b7dc" />
         <path d="M52 33 61 22v22Z" fill="#2a9d8f" />
         <circle cx="25" cy="29" r="3" fill="#263238" />
-        <path d="M31 41c4-2 7-5 8-10" fill="none" stroke="#ffb703" strokeWidth="3" strokeLinecap="round" />
+        <path
+          d="M31 41c4-2 7-5 8-10"
+          fill="none"
+          stroke="#ffb703"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
       </svg>
     )
   },
@@ -105,7 +122,12 @@ export const PET_TILES: PetTile[] = [
         <ellipse cx="33" cy="35" rx="20" ry="17" fill="#70a288" />
         <circle cx="52" cy="32" r="8" fill="#a3b18a" />
         <circle cx="54" cy="30" r="2" fill="#263238" />
-        <path d="M23 24 43 46M43 24 23 46M33 19v32" stroke="#4f772d" strokeWidth="3" strokeLinecap="round" />
+        <path
+          d="M23 24 43 46M43 24 23 46M33 19v32"
+          stroke="#4f772d"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
       </svg>
     )
   },
@@ -116,7 +138,12 @@ export const PET_TILES: PetTile[] = [
     accent: "#fff1d6",
     icon: (
       <Face color="#e76f51" accent="#fff1d6">
-        <path d="M14 24 21 9l9 13M50 24 43 9l-9 13" fill="#e76f51" stroke="#263238" strokeWidth="3" />
+        <path
+          d="M14 24 21 9l9 13M50 24 43 9l-9 13"
+          fill="#e76f51"
+          stroke="#263238"
+          strokeWidth="3"
+        />
         <path d="M21 40c6 7 16 7 22 0" fill="#fff1d6" />
       </Face>
     )

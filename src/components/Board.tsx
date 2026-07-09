@@ -24,7 +24,11 @@ export function Board({ board, selected, hinted, connectionPath, onTileClick }: 
           />
         ))}
         {connectionPath && (
-          <svg className="connection-layer" viewBox={`0 0 ${BOARD_COLUMNS} ${BOARD_ROWS}`} aria-hidden="true">
+          <svg
+            className="connection-layer"
+            viewBox={`0 0 ${BOARD_COLUMNS} ${BOARD_ROWS}`}
+            aria-hidden="true"
+          >
             <polyline points={connectionPath.map(toSvgPoint).join(" ")} />
           </svg>
         )}
