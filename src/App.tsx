@@ -251,19 +251,31 @@ export default function App() {
           onModeChange={handleModeChange}
           onLanguageChange={handleLanguageChange}
         />
-        <StatusBar
-          language={language}
-          mode={mode}
-          elapsedSeconds={elapsedSeconds}
-          remainingSeconds={remainingSeconds}
-          score={score}
-          moves={moves}
-          remainingPairs={remainingPairs}
-          shuffleAllowance={rewardAllowances.shuffleAllowance}
-          hintAllowance={rewardAllowances.hintAllowance}
-          bestRelaxedTime={bestRelaxedTime}
-          bestTimedScore={bestTimedScore}
-        />
+        <section className="top-game-panel" aria-label="Game tools">
+          <StatusBar
+            language={language}
+            mode={mode}
+            elapsedSeconds={elapsedSeconds}
+            remainingSeconds={remainingSeconds}
+            score={score}
+            moves={moves}
+            remainingPairs={remainingPairs}
+            shuffleAllowance={rewardAllowances.shuffleAllowance}
+            hintAllowance={rewardAllowances.hintAllowance}
+            bestRelaxedTime={bestRelaxedTime}
+            bestTimedScore={bestTimedScore}
+          />
+          <Controls
+            language={language}
+            paused={gameState === "paused"}
+            shuffleAllowance={rewardAllowances.shuffleAllowance}
+            hintAllowance={rewardAllowances.hintAllowance}
+            onNewGame={() => startNewGame()}
+            onHint={handleHint}
+            onShuffle={handleShuffle}
+            onPauseToggle={handlePauseToggle}
+          />
+        </section>
         {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
         <BoardView
           board={board}
@@ -271,16 +283,6 @@ export default function App() {
           hinted={hintedPoints}
           connectionPath={connectionPath}
           onTileClick={handleTileClick}
-        />
-        <Controls
-          language={language}
-          paused={gameState === "paused"}
-          shuffleAllowance={rewardAllowances.shuffleAllowance}
-          hintAllowance={rewardAllowances.hintAllowance}
-          onNewGame={() => startNewGame()}
-          onHint={handleHint}
-          onShuffle={handleShuffle}
-          onPauseToggle={handlePauseToggle}
         />
       </section>
       <GameDialog

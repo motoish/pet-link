@@ -142,14 +142,21 @@ h1 {
   font: inherit;
 }
 
+.top-game-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 184px;
+  align-items: stretch;
+  gap: 12px;
+}
+
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(112px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(7, minmax(92px, 1fr));
+  gap: 8px;
 }
 
 .status-item {
-  min-height: 72px;
+  min-height: 70px;
   display: grid;
   align-content: center;
   gap: 4px;
@@ -269,14 +276,16 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .controls button {
   background: #ffffff;
   border: 1px solid #c8d7bd;
   font-weight: 800;
+  min-width: 0;
+  padding: 0 10px;
 }
 
 .controls button:disabled {
