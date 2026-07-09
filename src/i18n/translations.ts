@@ -37,8 +37,10 @@ type TranslationKey =
   | "dialog.noReward"
   | "reward.currentPrefix"
   | "reward.resultPrefix"
-  | "reward.shuffle"
-  | "reward.hint";
+  | "reward.result.shuffle"
+  | "reward.result.hint"
+  | "reward.current.shuffle"
+  | "reward.current.hint";
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   "zh-CN": {
@@ -72,8 +74,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.noReward": "未获得额外奖励。",
     "reward.currentPrefix": "本局奖励",
     "reward.resultPrefix": "奖励结果",
-    "reward.shuffle": "打乱骰子 {roll} 点，下局打乱 {allowance} 次",
-    "reward.hint": "提示骰子 {roll} 点，下局提示 {allowance} 次"
+    "reward.result.shuffle": "打乱骰子 {roll} 点，下局打乱 {allowance} 次",
+    "reward.result.hint": "提示骰子 {roll} 点，下局提示 {allowance} 次",
+    "reward.current.shuffle": "上局打乱骰子 {roll} 点，本局打乱 {allowance} 次",
+    "reward.current.hint": "上局提示骰子 {roll} 点，本局提示 {allowance} 次"
   },
   en: {
     "app.eyebrow": "Pet Link",
@@ -106,8 +110,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.noReward": "No extra reward earned.",
     "reward.currentPrefix": "This round reward",
     "reward.resultPrefix": "Reward result",
-    "reward.shuffle": "Shuffle die rolled {roll}; next round has {allowance} shuffles",
-    "reward.hint": "Hint die rolled {roll}; next round has {allowance} hints"
+    "reward.result.shuffle": "Shuffle die rolled {roll}; next round has {allowance} shuffles",
+    "reward.result.hint": "Hint die rolled {roll}; next round has {allowance} hints",
+    "reward.current.shuffle": "Previous shuffle die rolled {roll}; this round has {allowance} shuffles",
+    "reward.current.hint": "Previous hint die rolled {roll}; this round has {allowance} hints"
   },
   ja: {
     "app.eyebrow": "Pet Link",
@@ -140,8 +146,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.noReward": "追加報酬はありません。",
     "reward.currentPrefix": "今回の報酬",
     "reward.resultPrefix": "報酬結果",
-    "reward.shuffle": "シャッフルのサイコロは {roll}、次回は {allowance} 回",
-    "reward.hint": "ヒントのサイコロは {roll}、次回は {allowance} 回"
+    "reward.result.shuffle": "シャッフルのサイコロは {roll}、次回は {allowance} 回",
+    "reward.result.hint": "ヒントのサイコロは {roll}、次回は {allowance} 回",
+    "reward.current.shuffle": "前回のシャッフルサイコロは {roll}、今回は {allowance} 回",
+    "reward.current.hint": "前回のヒントサイコロは {roll}、今回は {allowance} 回"
   }
 };
 

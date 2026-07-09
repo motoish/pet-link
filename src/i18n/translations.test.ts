@@ -16,6 +16,12 @@ describe("translations", () => {
     expect(t("ja", "app.title")).toBe("ペットリンク");
   });
 
+  test("uses different wording for earned next-round rewards and active current-round rewards", () => {
+    expect(t("zh-CN", "reward.result.shuffle", { roll: 2, allowance: 3 })).toBe("打乱骰子 2 点，下局打乱 3 次");
+    expect(t("zh-CN", "reward.current.shuffle", { roll: 2, allowance: 3 })).toBe("上局打乱骰子 2 点，本局打乱 3 次");
+    expect(t("zh-CN", "reward.current.hint", { roll: 2, allowance: 3 })).toBe("上局提示骰子 2 点，本局提示 3 次");
+  });
+
   test("falls back to Chinese for missing keys", () => {
     expect(t("en", "missing.key")).toBe("missing.key");
   });

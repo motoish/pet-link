@@ -240,7 +240,7 @@ export default function App() {
   }
 
   const dialog = getDialogState(gameState, mode, language, elapsedSeconds, remainingSeconds, score, completionReward);
-  const activeRewardText = formatRewardSummary(language, rewardAllowances, t(language, "reward.currentPrefix"));
+  const activeRewardText = formatRewardSummary(language, rewardAllowances, "current", t(language, "reward.currentPrefix"));
 
   return (
     <main className="app-shell">
@@ -329,7 +329,7 @@ function getDialogState(
   }
 
   if (gameState === "won") {
-    const rewardText = completionReward ? formatRewardSummary(language, completionReward, t(language, "reward.resultPrefix")) : null;
+    const rewardText = completionReward ? formatRewardSummary(language, completionReward, "result", t(language, "reward.resultPrefix")) : null;
     return {
       title: t(language, "dialog.won.title"),
       detail:
@@ -359,15 +359,20 @@ function samePoint(first: Point, second: Point): boolean {
   return first.row === second.row && first.column === second.column;
 }
 
-function formatRewardSummary(language: Language, reward: RewardAllowances, prefix: string): string | null {
+function formatRewardSummary(
+  language: Language,
+  reward: RewardAllowances,
+  context: "current" | "result",
+  prefix: string
+): string | null {
   const parts: string[] = [];
 
   if (reward.shuffleDieRoll !== null) {
-    parts.push(t(language, "reward.shuffle", { roll: reward.shuffleDieRoll, allowance: reward.shuffleAllowance }));
+    parts.push(t(language, `reward.${context}.shuffle`, { roll: reward.shuffleDieRoll, allowance: reward.shuffleAllowance }));
   }
 
   if (reward.hintDieRoll !== null) {
-    parts.push(t(language, "reward.hint", { roll: reward.hintDieRoll, allowance: reward.hintAllowance }));
+    parts.push(t(language, `reward.${context}.hint`, { roll: reward.hintDieRoll, allowance: reward.hintAllowance }));
   }
 
   return parts.length > 0 ? `${prefix}：${parts.join("；")}` : null;
