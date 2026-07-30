@@ -192,13 +192,6 @@ h1 {
   line-height: 1.05;
 }
 
-.header-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
 .controls button,
 .dialog-actions button {
   min-height: 42px;
@@ -544,18 +537,12 @@ h1 {
     gap: 12px;
   }
 
-  .header-controls {
-    width: 100%;
-    gap: 8px;
-  }
-
   .language-select {
     min-width: 92px;
   }
 
   .board-badge {
     min-width: 56px;
-    align-self: end;
     font-size: 0.85rem;
   }
 

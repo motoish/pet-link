@@ -332,7 +332,7 @@ export default function App() {
   return (
     <main className="app-shell">
       <section className="game-surface">
-        <Header language={language} onLanguageChange={handleLanguageChange} />
+        <Header language={language} />
         <section className="game-body" aria-label="Game tools">
           <StatusBar
             language={language}
