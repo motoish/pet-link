@@ -44,6 +44,112 @@ button {
     radial-gradient(circle at 85% 80%, rgba(113, 177, 156, 0.2), transparent 35%);
 }
 
+.mode-menu {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(238, 245, 234, 0.92), rgba(255, 247, 223, 0.9)),
+    radial-gradient(circle at 15% 20%, rgba(245, 166, 116, 0.22), transparent 32%),
+    radial-gradient(circle at 85% 80%, rgba(113, 177, 156, 0.2), transparent 35%);
+}
+
+.mode-menu-card {
+  width: min(760px, 100%);
+  display: grid;
+  gap: 28px;
+  border: 1px solid #cad8bd;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  padding: clamp(24px, 5vw, 48px);
+  box-shadow: 0 24px 80px rgba(45, 62, 47, 0.16);
+}
+
+.mode-menu-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.mode-menu-intro {
+  display: grid;
+  gap: 8px;
+}
+
+.mode-menu-intro h2 {
+  font-size: clamp(1.35rem, 1rem + 1vw, 1.8rem);
+}
+
+.mode-menu-intro p {
+  color: #5d7061;
+}
+
+.mode-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mode-option {
+  position: relative;
+  min-height: 168px;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  border: 2px solid #c8d7bd;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 24px;
+  color: #25313b;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.mode-option:hover,
+.mode-option:focus-visible {
+  border-color: #78a161;
+  box-shadow: 0 14px 32px rgba(45, 62, 47, 0.14);
+  transform: translateY(-2px);
+}
+
+.mode-option:focus-visible {
+  outline: 3px solid rgba(55, 111, 90, 0.28);
+  outline-offset: 3px;
+}
+
+.mode-option.last-played {
+  border-color: #78a161;
+}
+
+.mode-option-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.mode-best {
+  color: #5d7061;
+  font-weight: 700;
+}
+
+.last-played-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border-radius: 999px;
+  background: #edf4e7;
+  padding: 5px 9px;
+  color: #537a5a;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
 .game-surface {
   width: min(1180px, 100%);
   height: 100%;
@@ -94,17 +200,6 @@ h1 {
   gap: 12px;
 }
 
-.segmented-control {
-  display: grid;
-  grid-template-columns: repeat(2, 88px);
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid #c8d7bd;
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-.segmented-control button,
 .controls button,
 .dialog-actions button {
   min-height: 42px;
@@ -118,14 +213,12 @@ h1 {
     box-shadow 120ms ease;
 }
 
-.segmented-control button.active,
 .controls button:hover:not(:disabled),
 .dialog-actions button:hover {
   background: #78a161;
   color: #ffffff;
 }
 
-.segmented-control button:active,
 .controls button:active:not(:disabled),
 .dialog-actions button:active {
   transform: translateY(1px);
@@ -317,6 +410,15 @@ h1 {
   cursor: not-allowed;
 }
 
+.controls .exit-button {
+  grid-column: 1 / -1;
+  color: #8c3f45;
+}
+
+.controls .exit-button:hover {
+  background: #a84d55;
+}
+
 .dialog-backdrop {
   position: fixed;
   inset: 0;
@@ -386,6 +488,29 @@ h1 {
 }
 
 @media (max-width: 560px) {
+  .mode-menu {
+    align-items: start;
+    padding: 16px;
+  }
+
+  .mode-menu-card {
+    gap: 22px;
+    padding: 24px 18px;
+  }
+
+  .mode-menu-header {
+    align-items: end;
+  }
+
+  .mode-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mode-option {
+    min-height: 128px;
+    padding: 20px;
+  }
+
   .game-surface {
     gap: 12px;
   }
@@ -393,11 +518,6 @@ h1 {
   .header-controls {
     width: 100%;
     gap: 8px;
-  }
-
-  .segmented-control {
-    flex: 1 1 auto;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .language-select {

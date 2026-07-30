@@ -3,6 +3,7 @@ import { Board as BoardView } from "@src/components/Board";
 import { Controls } from "@src/components/Controls";
 import { GameDialog } from "@src/components/GameDialog";
 import { Header } from "@src/components/Header";
+import { ModeSelect } from "@src/components/ModeSelect";
 import { formatTime, StatusBar } from "@src/components/StatusBar";
 import {
   applyMatch,
@@ -13,6 +14,7 @@ import {
   shuffleRemainingTiles
 } from "@src/game/board";
 import { findConnection } from "@src/game/pathfinding";
+import { createMenuSession, exitSession, startSession } from "@src/game/session";
 import type { PreviousGameResult, RewardAllowances } from "@src/game/shuffleRewards";
 import {
   calculateRewardAllowances,
@@ -49,33 +51,34 @@ function createFreshBoard(): Board {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<GameMode>(() => loadLastMode());
+  const [session, setSession] = useState(() => createMenuSession(loadLastMode()));
   const [language, setLanguage] = useState<Language>(() => loadLanguage());
-  const [board, setBoard] = useState<Board>(() => createFreshBoard());
+  const [board, setBoard] = useState<Board | null>(null);
   const [selected, setSelected] = useState<Point | null>(null);
   const [connectionPath, setConnectionPath] = useState<Point[] | null>(null);
   const [hintedPoints, setHintedPoints] = useState<Point[]>([]);
   const [gameState, setGameState] = useState<GameState>("playing");
   const [failureReason, setFailureReason] = useState<FailureReason | null>(null);
   const [isAutoShuffleNoticeVisible, setIsAutoShuffleNoticeVisible] = useState(false);
+  const [isExitConfirmationVisible, setIsExitConfirmationVisible] = useState(false);
   const [score, setScore] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(TIMED_MODE_SECONDS);
-  const [rewardAllowances, setRewardAllowances] = useState<RewardAllowances>(() => {
-    return consumePendingReward() ?? createBaseRewardAllowances();
-  });
+  const [rewardAllowances, setRewardAllowances] = useState<RewardAllowances>(() =>
+    createBaseRewardAllowances()
+  );
   const [completionReward, setCompletionReward] = useState<RewardAllowances | null>(null);
   const [bestRelaxedTime, setBestRelaxedTime] = useState(() => loadBestRelaxedTime());
   const [bestTimedScore, setBestTimedScore] = useState(() => loadBestTimedScore());
 
   useEffect(() => {
-    if (gameState !== "playing") {
+    if (session.phase !== "game" || gameState !== "playing" || isExitConfirmationVisible) {
       return;
     }
 
     const timer = window.setInterval(() => {
       setElapsedSeconds((seconds) => seconds + 1);
-      if (mode === "timed") {
+      if (session.mode === "timed") {
         setRemainingSeconds((seconds) => {
           if (seconds <= 1) {
             const failedResult: PreviousGameResult = {
@@ -94,11 +97,11 @@ export default function App() {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [gameState, mode]);
+  }, [gameState, isExitConfirmationVisible, session.mode, session.phase]);
 
-  function startNewGame(nextMode = mode) {
+  function startNewGame(nextMode = session.mode) {
     const nextReward = consumePendingReward() ?? createBaseRewardAllowances();
-    setMode(nextMode);
+    setSession((current) => startSession(current, nextMode));
     saveLastMode(nextMode);
     setBoard(createFreshBoard());
     setSelected(null);
@@ -107,15 +110,12 @@ export default function App() {
     setGameState("playing");
     setFailureReason(null);
     setIsAutoShuffleNoticeVisible(false);
+    setIsExitConfirmationVisible(false);
     setScore(0);
     setElapsedSeconds(0);
     setRemainingSeconds(TIMED_MODE_SECONDS);
     setRewardAllowances(nextReward);
     setCompletionReward(null);
-  }
-
-  function handleModeChange(nextMode: GameMode) {
-    startNewGame(nextMode);
   }
 
   function handleLanguageChange(nextLanguage: Language) {
@@ -124,7 +124,7 @@ export default function App() {
   }
 
   function handleTileClick(point: Point) {
-    if (gameState !== "playing") {
+    if (!board || gameState !== "playing") {
       return;
     }
 
@@ -151,7 +151,7 @@ export default function App() {
 
     const outcome = applyMatch(board, selected, point, rewardAllowances.shuffleAllowance);
     const nextScore =
-      score + 100 + (mode === "timed" ? Math.max(0, Math.floor(remainingSeconds / 10)) : 0);
+      score + 100 + (session.mode === "timed" ? Math.max(0, Math.floor(remainingSeconds / 10)) : 0);
 
     setSelected(null);
     setHintedPoints([]);
@@ -195,7 +195,7 @@ export default function App() {
     setGameState("failed");
     setFailureReason(reason);
     savePreviousGameResult(
-      mode === "timed"
+      session.mode === "timed"
         ? { mode: "timed", completed: false, remainingSeconds }
         : { mode: "relaxed", completed: false, remainingSeconds: null }
     );
@@ -204,7 +204,7 @@ export default function App() {
   function finishGame(finalScore: number) {
     setGameState("won");
 
-    if (mode === "timed") {
+    if (session.mode === "timed") {
       const result: PreviousGameResult = {
         mode: "timed",
         completed: true,
@@ -231,7 +231,7 @@ export default function App() {
   }
 
   function handleHint() {
-    if (gameState !== "playing" || rewardAllowances.hintAllowance <= 0) {
+    if (!board || gameState !== "playing" || rewardAllowances.hintAllowance <= 0) {
       return;
     }
 
@@ -250,11 +250,11 @@ export default function App() {
   }
 
   function handleShuffle() {
-    if (gameState !== "playing" || rewardAllowances.shuffleAllowance <= 0) {
+    if (!board || gameState !== "playing" || rewardAllowances.shuffleAllowance <= 0) {
       return;
     }
 
-    setBoard((currentBoard) => ensureBoardHasMatch(shuffleRemainingTiles(currentBoard)));
+    setBoard(ensureBoardHasMatch(shuffleRemainingTiles(board)));
     setSelected(null);
     setConnectionPath(null);
     setHintedPoints([]);
@@ -277,10 +277,45 @@ export default function App() {
     });
   }
 
+  function handleExitRequest() {
+    setIsExitConfirmationVisible(true);
+  }
+
+  function handleExitCancel() {
+    setIsExitConfirmationVisible(false);
+  }
+
+  function handleExitConfirm() {
+    setSession((current) => exitSession(current));
+    setBoard(null);
+    setSelected(null);
+    setConnectionPath(null);
+    setHintedPoints([]);
+    setGameState("playing");
+    setFailureReason(null);
+    setIsAutoShuffleNoticeVisible(false);
+    setIsExitConfirmationVisible(false);
+    setCompletionReward(null);
+    setRewardAllowances(createBaseRewardAllowances());
+  }
+
+  if (session.phase === "menu" || !board) {
+    return (
+      <ModeSelect
+        language={language}
+        lastMode={session.mode}
+        bestRelaxedTime={bestRelaxedTime}
+        bestTimedScore={bestTimedScore}
+        onStart={startNewGame}
+        onLanguageChange={handleLanguageChange}
+      />
+    );
+  }
+
   const dialog = getDialogState(
     gameState,
     failureReason,
-    mode,
+    session.mode,
     language,
     elapsedSeconds,
     remainingSeconds,
@@ -297,16 +332,11 @@ export default function App() {
   return (
     <main className="app-shell">
       <section className="game-surface">
-        <Header
-          mode={mode}
-          language={language}
-          onModeChange={handleModeChange}
-          onLanguageChange={handleLanguageChange}
-        />
+        <Header language={language} onLanguageChange={handleLanguageChange} />
         <section className="top-game-panel" aria-label="Game tools">
           <StatusBar
             language={language}
-            mode={mode}
+            mode={session.mode}
             elapsedSeconds={elapsedSeconds}
             remainingSeconds={remainingSeconds}
             score={score}
@@ -324,6 +354,7 @@ export default function App() {
             onHint={handleHint}
             onShuffle={handleShuffle}
             onPauseToggle={handlePauseToggle}
+            onExit={handleExitRequest}
           />
         </section>
         {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
@@ -346,6 +377,18 @@ export default function App() {
         detail={dialog.detail}
         primaryLabel={dialog.primaryLabel}
         resumeLabel={t(language, "dialog.resume")}
+        exitConfirmation={
+          isExitConfirmationVisible
+            ? {
+                title: t(language, "dialog.exit.title"),
+                detail: t(language, "dialog.exit.detail"),
+                cancelLabel: t(language, "dialog.exit.cancel"),
+                confirmLabel: t(language, "dialog.exit.confirm"),
+                onCancel: handleExitCancel,
+                onConfirm: handleExitConfirm
+              }
+            : null
+        }
         onPrimary={() => startNewGame()}
         onResume={() => setGameState("playing")}
       />

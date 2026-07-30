@@ -10,6 +10,7 @@ type ControlsProps = {
   onHint: () => void;
   onShuffle: () => void;
   onPauseToggle: () => void;
+  onExit: () => void;
 };
 
 export function Controls({
@@ -20,7 +21,8 @@ export function Controls({
   onNewGame,
   onHint,
   onShuffle,
-  onPauseToggle
+  onPauseToggle,
+  onExit
 }: ControlsProps) {
   return (
     <section className="controls" aria-label="游戏操作">
@@ -33,6 +35,9 @@ export function Controls({
       </button>
       <button onClick={onPauseToggle}>
         {paused ? t(language, "controls.resume") : t(language, "controls.pause")}
+      </button>
+      <button className="exit-button" onClick={onExit}>
+        {t(language, "controls.exit")}
       </button>
     </section>
   );

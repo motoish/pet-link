@@ -41,6 +41,26 @@ describe("translations", () => {
     }
   });
 
+  test("translates mode menu and exit confirmation copy in every language", () => {
+    const keys = [
+      "menu.chooseMode",
+      "menu.description",
+      "menu.lastPlayed",
+      "menu.best",
+      "controls.exit",
+      "dialog.exit.title",
+      "dialog.exit.detail",
+      "dialog.exit.cancel",
+      "dialog.exit.confirm"
+    ];
+
+    for (const language of LANGUAGES) {
+      for (const key of keys) {
+        expect(t(language.code, key)).not.toBe(key);
+      }
+    }
+  });
+
   test("falls back to Chinese for missing keys", () => {
     expect(t("en", "missing.key")).toBe("missing.key");
   });

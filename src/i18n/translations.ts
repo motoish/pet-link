@@ -13,6 +13,10 @@ type TranslationKey =
   | "mode.timed"
   | "settings.language"
   | "board.size"
+  | "menu.chooseMode"
+  | "menu.description"
+  | "menu.lastPlayed"
+  | "menu.best"
   | "status.elapsed"
   | "status.remainingTime"
   | "status.score"
@@ -26,6 +30,7 @@ type TranslationKey =
   | "controls.shuffle"
   | "controls.pause"
   | "controls.resume"
+  | "controls.exit"
   | "dialog.paused.title"
   | "dialog.paused.detail"
   | "dialog.won.title"
@@ -33,6 +38,10 @@ type TranslationKey =
   | "dialog.failed.detail"
   | "dialog.failed.deadlockTitle"
   | "dialog.failed.deadlock"
+  | "dialog.exit.title"
+  | "dialog.exit.detail"
+  | "dialog.exit.cancel"
+  | "dialog.exit.confirm"
   | "notice.autoShuffle"
   | "dialog.playAgain"
   | "dialog.restart"
@@ -53,6 +62,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "mode.timed": "限时",
     "settings.language": "语言",
     "board.size": "10 x 8",
+    "menu.chooseMode": "选择游戏模式",
+    "menu.description": "选择一种模式开始新游戏",
+    "menu.lastPlayed": "上次游玩",
+    "menu.best": "最佳",
     "status.elapsed": "用时",
     "status.remainingTime": "剩余",
     "status.score": "分数",
@@ -66,6 +79,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "controls.shuffle": "打乱",
     "controls.pause": "暂停",
     "controls.resume": "继续",
+    "controls.exit": "退出",
     "dialog.paused.title": "已暂停",
     "dialog.paused.detail": "休息一下，棋盘会保持原样。",
     "dialog.won.title": "通关",
@@ -73,6 +87,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.failed.detail": "这局没有获得打乱奖励。",
     "dialog.failed.deadlockTitle": "无法继续",
     "dialog.failed.deadlock": "没有可以配对的宠物且打乱次数为 0，游戏结束",
+    "dialog.exit.title": "退出当前游戏？",
+    "dialog.exit.detail": "当前进度不会保存。",
+    "dialog.exit.cancel": "取消",
+    "dialog.exit.confirm": "退出",
     "notice.autoShuffle": "没有可以配对的宠物，自动打乱一次",
     "dialog.playAgain": "再来一局",
     "dialog.restart": "重新开始",
@@ -92,6 +110,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "mode.timed": "Timed",
     "settings.language": "Language",
     "board.size": "10 x 8",
+    "menu.chooseMode": "Choose a mode",
+    "menu.description": "Choose a mode to start a new game",
+    "menu.lastPlayed": "Last played",
+    "menu.best": "Best",
     "status.elapsed": "Time",
     "status.remainingTime": "Left",
     "status.score": "Score",
@@ -105,6 +127,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "controls.shuffle": "Shuffle",
     "controls.pause": "Pause",
     "controls.resume": "Resume",
+    "controls.exit": "Exit",
     "dialog.paused.title": "Paused",
     "dialog.paused.detail": "Take a break. The board will stay as it is.",
     "dialog.won.title": "Cleared",
@@ -113,6 +136,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.failed.deadlockTitle": "No Moves Left",
     "dialog.failed.deadlock":
       "No matching pets can be connected and no shuffles remain. Game over.",
+    "dialog.exit.title": "Exit this game?",
+    "dialog.exit.detail": "Your current progress will not be saved.",
+    "dialog.exit.cancel": "Cancel",
+    "dialog.exit.confirm": "Exit",
     "notice.autoShuffle": "No matching pets can be connected, so the board was shuffled once.",
     "dialog.playAgain": "Play Again",
     "dialog.restart": "Restart",
@@ -133,6 +160,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "mode.timed": "タイム",
     "settings.language": "言語",
     "board.size": "10 x 8",
+    "menu.chooseMode": "ゲームモードを選択",
+    "menu.description": "モードを選んで新しいゲームを始めます",
+    "menu.lastPlayed": "前回",
+    "menu.best": "ベスト",
     "status.elapsed": "時間",
     "status.remainingTime": "残り",
     "status.score": "スコア",
@@ -146,6 +177,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "controls.shuffle": "シャッフル",
     "controls.pause": "一時停止",
     "controls.resume": "再開",
+    "controls.exit": "終了",
     "dialog.paused.title": "一時停止",
     "dialog.paused.detail": "少し休憩。盤面はそのままです。",
     "dialog.won.title": "クリア",
@@ -154,6 +186,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.failed.deadlockTitle": "手詰まり",
     "dialog.failed.deadlock":
       "つながるペットがなく、シャッフルの回数も残っていません。ゲーム終了です。",
+    "dialog.exit.title": "現在のゲームを終了しますか？",
+    "dialog.exit.detail": "現在の進行状況は保存されません。",
+    "dialog.exit.cancel": "キャンセル",
+    "dialog.exit.confirm": "終了",
     "notice.autoShuffle": "つながるペットがないため、盤面を 1 回シャッフルしました。",
     "dialog.playAgain": "もう一度",
     "dialog.restart": "再開",
