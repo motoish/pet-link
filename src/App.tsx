@@ -333,7 +333,7 @@ export default function App() {
     <main className="app-shell">
       <section className="game-surface">
         <Header language={language} onLanguageChange={handleLanguageChange} />
-        <section className="top-game-panel" aria-label="Game tools">
+        <section className="game-body" aria-label="Game tools">
           <StatusBar
             language={language}
             mode={session.mode}
@@ -356,20 +356,22 @@ export default function App() {
             onPauseToggle={handlePauseToggle}
             onExit={handleExitRequest}
           />
+          <div className="game-stack">
+            {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
+            {isAutoShuffleNoticeVisible && (
+              <p className="reward-note" role="status">
+                {t(language, "notice.autoShuffle")}
+              </p>
+            )}
+            <BoardView
+              board={board}
+              selected={selected}
+              hinted={hintedPoints}
+              connectionPath={connectionPath}
+              onTileClick={handleTileClick}
+            />
+          </div>
         </section>
-        {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
-        {isAutoShuffleNoticeVisible && (
-          <p className="reward-note" role="status">
-            {t(language, "notice.autoShuffle")}
-          </p>
-        )}
-        <BoardView
-          board={board}
-          selected={selected}
-          hinted={hintedPoints}
-          connectionPath={connectionPath}
-          onTileClick={handleTileClick}
-        />
       </section>
       <GameDialog
         state={gameState}

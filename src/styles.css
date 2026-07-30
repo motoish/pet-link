@@ -160,7 +160,6 @@ button {
 }
 
 .game-header,
-.top-game-panel,
 .reward-note {
   flex: 0 0 auto;
 }
@@ -254,16 +253,30 @@ h1 {
   font: inherit;
 }
 
-.top-game-panel {
+.game-body {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 184px;
-  align-items: start;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px 12px;
+}
+
+.game-stack {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .status-grid {
+  grid-column: 1;
+  grid-row: 1;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-content: start;
   gap: 8px;
 }
 
@@ -391,8 +404,11 @@ h1 {
 }
 
 .controls {
+  grid-column: 2;
+  grid-row: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   gap: 8px;
 }
 
@@ -473,8 +489,21 @@ h1 {
     height: auto;
   }
 
-  .top-game-panel {
+  .game-body {
+    flex: 0 0 auto;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+
+  .status-grid,
+  .controls,
+  .game-stack {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .board-wrap {
