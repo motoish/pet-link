@@ -5,9 +5,9 @@ import { GameDialog } from "@src/components/GameDialog";
 import { Header } from "@src/components/Header";
 import { formatTime, StatusBar } from "@src/components/StatusBar";
 import {
-  clearCells,
-  countRemainingPairs,
+  applyMatch,
   createBoard,
+  ensureBoardHasMatch,
   findAvailablePair,
   getCell,
   shuffleRemainingTiles
@@ -38,6 +38,7 @@ import {
 import { useEffect, useState } from "react";
 
 type GameState = "playing" | "paused" | "won" | "failed";
+type FailureReason = "timeout" | "deadlock";
 
 const TILE_IDS = PET_TILES.map((tile) => tile.id);
 const PATH_FLASH_MS = 220;
@@ -55,6 +56,8 @@ export default function App() {
   const [connectionPath, setConnectionPath] = useState<Point[] | null>(null);
   const [hintedPoints, setHintedPoints] = useState<Point[]>([]);
   const [gameState, setGameState] = useState<GameState>("playing");
+  const [failureReason, setFailureReason] = useState<FailureReason | null>(null);
+  const [isAutoShuffleNoticeVisible, setIsAutoShuffleNoticeVisible] = useState(false);
   const [score, setScore] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(TIMED_MODE_SECONDS);
@@ -82,6 +85,7 @@ export default function App() {
             };
             savePreviousGameResult(failedResult);
             setGameState("failed");
+            setFailureReason("timeout");
             return 0;
           }
           return seconds - 1;
@@ -101,6 +105,8 @@ export default function App() {
     setConnectionPath(null);
     setHintedPoints([]);
     setGameState("playing");
+    setFailureReason(null);
+    setIsAutoShuffleNoticeVisible(false);
     setScore(0);
     setElapsedSeconds(0);
     setRemainingSeconds(TIMED_MODE_SECONDS);
@@ -143,21 +149,56 @@ export default function App() {
       return;
     }
 
-    const nextBoard = clearCells(board, selected, point);
-    const nextRemainingPairs = countRemainingPairs(nextBoard);
+    const outcome = applyMatch(board, selected, point, rewardAllowances.shuffleAllowance);
     const nextScore =
       score + 100 + (mode === "timed" ? Math.max(0, Math.floor(remainingSeconds / 10)) : 0);
 
-    setBoard(nextBoard);
-    setConnectionPath(path);
-    window.setTimeout(() => setConnectionPath(null), PATH_FLASH_MS);
     setSelected(null);
     setHintedPoints([]);
     setScore(nextScore);
+    setBoard(outcome.board);
 
-    if (nextRemainingPairs === 0) {
+    if (outcome.kind === "won") {
+      flashConnection(path);
       finishGame(nextScore);
+      return;
     }
+
+    if (outcome.kind === "cleared") {
+      flashConnection(path);
+      setIsAutoShuffleNoticeVisible(false);
+      return;
+    }
+
+    // 死局分支下棋盘会被替换或立即结束，本次连线的坐标已无意义，因此不播放
+    setConnectionPath(null);
+
+    if (outcome.kind === "autoShuffled") {
+      setIsAutoShuffleNoticeVisible(true);
+      setRewardAllowances((current) => ({
+        ...current,
+        shuffleAllowance: current.shuffleAllowance - 1
+      }));
+      return;
+    }
+
+    setIsAutoShuffleNoticeVisible(false);
+    failGame("deadlock");
+  }
+
+  function flashConnection(path: Point[]) {
+    setConnectionPath(path);
+    window.setTimeout(() => setConnectionPath(null), PATH_FLASH_MS);
+  }
+
+  function failGame(reason: FailureReason) {
+    setGameState("failed");
+    setFailureReason(reason);
+    savePreviousGameResult(
+      mode === "timed"
+        ? { mode: "timed", completed: false, remainingSeconds }
+        : { mode: "relaxed", completed: false, remainingSeconds: null }
+    );
   }
 
   function finishGame(finalScore: number) {
@@ -217,6 +258,7 @@ export default function App() {
     setSelected(null);
     setConnectionPath(null);
     setHintedPoints([]);
+    setIsAutoShuffleNoticeVisible(false);
     setRewardAllowances((current) => ({
       ...current,
       shuffleAllowance: current.shuffleAllowance - 1
@@ -237,6 +279,7 @@ export default function App() {
 
   const dialog = getDialogState(
     gameState,
+    failureReason,
     mode,
     language,
     elapsedSeconds,
@@ -284,6 +327,11 @@ export default function App() {
           />
         </section>
         {activeRewardText && <p className="reward-note">{activeRewardText}</p>}
+        {isAutoShuffleNoticeVisible && (
+          <p className="reward-note" role="status">
+            {t(language, "notice.autoShuffle")}
+          </p>
+        )}
         <BoardView
           board={board}
           selected={selected}
@@ -305,21 +353,9 @@ export default function App() {
   );
 }
 
-function ensureBoardHasMatch(board: Board): Board {
-  let nextBoard = board;
-
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    if (findAvailablePair(nextBoard)) {
-      return nextBoard;
-    }
-    nextBoard = shuffleRemainingTiles(nextBoard);
-  }
-
-  return nextBoard;
-}
-
 function getDialogState(
   gameState: GameState,
+  failureReason: FailureReason | null,
   mode: GameMode,
   language: Language,
   elapsedSeconds: number,
@@ -355,9 +391,10 @@ function getDialogState(
   }
 
   if (gameState === "failed") {
+    const isDeadlock = failureReason === "deadlock";
     return {
-      title: t(language, "dialog.failed.title"),
-      detail: t(language, "dialog.failed.detail"),
+      title: t(language, isDeadlock ? "dialog.failed.deadlockTitle" : "dialog.failed.title"),
+      detail: t(language, isDeadlock ? "dialog.failed.deadlock" : "dialog.failed.detail"),
       primaryLabel: t(language, "dialog.restart")
     };
   }

@@ -31,6 +31,9 @@ type TranslationKey =
   | "dialog.won.title"
   | "dialog.failed.title"
   | "dialog.failed.detail"
+  | "dialog.failed.deadlockTitle"
+  | "dialog.failed.deadlock"
+  | "notice.autoShuffle"
   | "dialog.playAgain"
   | "dialog.restart"
   | "dialog.resume"
@@ -68,6 +71,9 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.won.title": "通关",
     "dialog.failed.title": "时间到",
     "dialog.failed.detail": "这局没有获得打乱奖励。",
+    "dialog.failed.deadlockTitle": "无法继续",
+    "dialog.failed.deadlock": "没有可以配对的宠物且打乱次数为 0，游戏结束",
+    "notice.autoShuffle": "没有可以配对的宠物，自动打乱一次",
     "dialog.playAgain": "再来一局",
     "dialog.restart": "重新开始",
     "dialog.resume": "继续",
@@ -104,6 +110,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.won.title": "Cleared",
     "dialog.failed.title": "Time Up",
     "dialog.failed.detail": "No reward was earned this round.",
+    "dialog.failed.deadlockTitle": "No Moves Left",
+    "dialog.failed.deadlock":
+      "No matching pets can be connected and no shuffles remain. Game over.",
+    "notice.autoShuffle": "No matching pets can be connected, so the board was shuffled once.",
     "dialog.playAgain": "Play Again",
     "dialog.restart": "Restart",
     "dialog.resume": "Resume",
@@ -141,6 +151,10 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     "dialog.won.title": "クリア",
     "dialog.failed.title": "時間切れ",
     "dialog.failed.detail": "このラウンドでは報酬を獲得できませんでした。",
+    "dialog.failed.deadlockTitle": "手詰まり",
+    "dialog.failed.deadlock":
+      "つながるペットがなく、シャッフルの回数も残っていません。ゲーム終了です。",
+    "notice.autoShuffle": "つながるペットがないため、盤面を 1 回シャッフルしました。",
     "dialog.playAgain": "もう一度",
     "dialog.restart": "再開",
     "dialog.resume": "再開",

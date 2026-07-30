@@ -1,11 +1,14 @@
 import {
   BOARD_COLUMNS,
   BOARD_ROWS,
+  applyMatch,
   clearCells,
   countRemainingPairs,
   createBoard,
+  ensureBoardHasMatch,
   findAvailablePair,
   getCell,
+  resolveDeadlock,
   shuffleRemainingTiles
 } from "@src/game/board";
 import type { Board, Point } from "@src/game/types";
@@ -123,5 +126,112 @@ describe("findAvailablePair", () => {
     const board = boardFromRows([["cat", null, "dog"]]);
 
     expect(findAvailablePair(board)).toBeNull();
+  });
+});
+
+// 对角同色、四格填满，任何路线都会被另一种宠物挡住，是最小的死局盘面
+function deadlockBoard(): Board {
+  return boardFromRows([
+    ["cat", "dog"],
+    ["dog", "cat"]
+  ]);
+}
+
+describe("ensureBoardHasMatch", () => {
+  test("keeps a board that already has a connectable pair", () => {
+    const board = boardFromRows([["cat", "cat"]]);
+
+    expect(ensureBoardHasMatch(board, () => 0)).toBe(board);
+  });
+
+  test("reshuffles a deadlocked board until a pair can connect", () => {
+    const board = ensureBoardHasMatch(deadlockBoard(), () => 0);
+
+    expect(findAvailablePair(board)).not.toBeNull();
+    expect(tileCounts(board)).toEqual(tileCounts(deadlockBoard()));
+  });
+});
+
+describe("resolveDeadlock", () => {
+  test("reports a playable board without touching it", () => {
+    const board = boardFromRows([["cat", "cat"]]);
+
+    const outcome = resolveDeadlock(board, 1, () => 0);
+
+    expect(outcome).toEqual({ kind: "playable", board });
+  });
+
+  test("shuffles a deadlocked board when a shuffle is still available", () => {
+    const outcome = resolveDeadlock(deadlockBoard(), 1, () => 0);
+
+    expect(outcome.kind).toBe("shuffled");
+    if (outcome.kind !== "shuffled") {
+      return;
+    }
+    expect(findAvailablePair(outcome.board)).not.toBeNull();
+    expect(tileCounts(outcome.board)).toEqual(tileCounts(deadlockBoard()));
+  });
+
+  test("reports exhausted on a deadlocked board with no shuffle left", () => {
+    expect(resolveDeadlock(deadlockBoard(), 0, () => 0)).toEqual({ kind: "exhausted" });
+  });
+
+  test("reports exhausted when reshuffling cannot produce a connectable pair", () => {
+    const board = boardFromRows([["cat", "dog"]]);
+
+    expect(resolveDeadlock(board, 5, () => 0)).toEqual({ kind: "exhausted" });
+  });
+});
+
+describe("applyMatch", () => {
+  const first: Point = { row: 0, column: 0 };
+  const second: Point = { row: 0, column: 1 };
+
+  test("reports a win when the last pair is cleared even without shuffles left", () => {
+    const board = boardFromRows([["cat", "cat"]]);
+
+    const outcome = applyMatch(board, first, second, 0, () => 0);
+
+    expect(outcome.kind).toBe("won");
+    expect(countRemainingPairs(outcome.board)).toBe(0);
+  });
+
+  test("reports a plain clear while playable tiles remain", () => {
+    const board = boardFromRows([
+      ["cat", "cat"],
+      ["dog", "dog"]
+    ]);
+
+    const outcome = applyMatch(board, first, second, 1, () => 0);
+
+    expect(outcome.kind).toBe("cleared");
+    expect(getCell(outcome.board, first).tileId).toBeNull();
+    expect(getCell(outcome.board, second).tileId).toBeNull();
+  });
+
+  test("auto shuffles when clearing leads to a deadlock and a shuffle remains", () => {
+    const board = boardFromRows([
+      ["cat", "cat", null, null],
+      [null, null, "dog", "fox"],
+      [null, null, "fox", "dog"]
+    ]);
+
+    const outcome = applyMatch(board, first, second, 1, () => 0);
+
+    expect(outcome.kind).toBe("autoShuffled");
+    expect(findAvailablePair(outcome.board)).not.toBeNull();
+  });
+
+  test("reports a deadlock when clearing leads to a deadlock with no shuffle left", () => {
+    const board = boardFromRows([
+      ["cat", "cat", null, null],
+      [null, null, "dog", "fox"],
+      [null, null, "fox", "dog"]
+    ]);
+
+    const outcome = applyMatch(board, first, second, 0, () => 0);
+
+    expect(outcome.kind).toBe("deadlocked");
+    expect(findAvailablePair(outcome.board)).toBeNull();
   });
 });

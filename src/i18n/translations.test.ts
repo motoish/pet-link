@@ -28,6 +28,19 @@ describe("translations", () => {
     );
   });
 
+  test("translates the deadlock notice and game over detail in every language", () => {
+    expect(t("zh-CN", "notice.autoShuffle")).toBe("没有可以配对的宠物，自动打乱一次");
+    expect(t("zh-CN", "dialog.failed.deadlock")).toBe("没有可以配对的宠物且打乱次数为 0，游戏结束");
+
+    for (const language of LANGUAGES) {
+      expect(t(language.code, "notice.autoShuffle")).not.toBe("notice.autoShuffle");
+      expect(t(language.code, "dialog.failed.deadlock")).not.toBe("dialog.failed.deadlock");
+      expect(t(language.code, "dialog.failed.deadlockTitle")).not.toBe(
+        "dialog.failed.deadlockTitle"
+      );
+    }
+  });
+
   test("falls back to Chinese for missing keys", () => {
     expect(t("en", "missing.key")).toBe("missing.key");
   });

@@ -4,6 +4,18 @@ import type { Board, Cell, MatchHint, Point, RandomFn } from "@src/game/types";
 export const BOARD_COLUMNS = 10;
 export const BOARD_ROWS = 8;
 const CELL_COUNT = BOARD_COLUMNS * BOARD_ROWS;
+const MAX_RESHUFFLE_ATTEMPTS = 20;
+
+export type DeadlockOutcome =
+  | { kind: "playable"; board: Board }
+  | { kind: "shuffled"; board: Board }
+  | { kind: "exhausted" };
+
+export type MatchOutcome =
+  | { kind: "won"; board: Board }
+  | { kind: "cleared"; board: Board }
+  | { kind: "autoShuffled"; board: Board }
+  | { kind: "deadlocked"; board: Board };
 
 export function createBoard(tileIds: string[], random: RandomFn = Math.random): Board {
   if (tileIds.length === 0) {
@@ -93,6 +105,67 @@ export function findAvailablePair(board: Board): MatchHint | null {
   }
 
   return null;
+}
+
+export function ensureBoardHasMatch(board: Board, random: RandomFn = Math.random): Board {
+  let nextBoard = board;
+
+  for (let attempt = 0; attempt < MAX_RESHUFFLE_ATTEMPTS; attempt += 1) {
+    if (findAvailablePair(nextBoard)) {
+      return nextBoard;
+    }
+    nextBoard = shuffleRemainingTiles(nextBoard, random);
+  }
+
+  return nextBoard;
+}
+
+export function resolveDeadlock(
+  board: Board,
+  shuffleAllowance: number,
+  random: RandomFn = Math.random
+): DeadlockOutcome {
+  if (findAvailablePair(board)) {
+    return { kind: "playable", board };
+  }
+
+  if (shuffleAllowance <= 0) {
+    return { kind: "exhausted" };
+  }
+
+  const shuffledBoard = ensureBoardHasMatch(board, random);
+  if (!findAvailablePair(shuffledBoard)) {
+    return { kind: "exhausted" };
+  }
+
+  return { kind: "shuffled", board: shuffledBoard };
+}
+
+export function applyMatch(
+  board: Board,
+  first: Point,
+  second: Point,
+  shuffleAllowance: number,
+  random: RandomFn = Math.random
+): MatchOutcome {
+  const clearedBoard = clearCells(board, first, second);
+
+  // 通关必须先于死局判定：空棋盘同样找不到可配对宠物，顺序反了会把胜利判成死局
+  if (countRemainingPairs(clearedBoard) === 0) {
+    return { kind: "won", board: clearedBoard };
+  }
+
+  const outcome = resolveDeadlock(clearedBoard, shuffleAllowance, random);
+
+  if (outcome.kind === "playable") {
+    return { kind: "cleared", board: clearedBoard };
+  }
+
+  if (outcome.kind === "shuffled") {
+    return { kind: "autoShuffled", board: outcome.board };
+  }
+
+  return { kind: "deadlocked", board: clearedBoard };
 }
 
 function mapBoard(board: Board, mapCell: (cell: Cell) => Cell): Board {
